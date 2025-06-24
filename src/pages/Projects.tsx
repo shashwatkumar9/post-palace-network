@@ -1,33 +1,42 @@
-
-import { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Input } from "@/components/ui/input";
 import { Globe, Search, Plus, Calendar, Target, BarChart3, Settings } from "lucide-react";
 import { Link } from "react-router-dom";
+import Header from "@/components/Header";
+import Footer from "@/components/Footer";
 
 const Projects = () => {
-  const [isLoggedIn, setIsLoggedIn] = useState(true);
+  const isLoggedIn = false; // This will be replaced with actual auth state
   const [searchTerm, setSearchTerm] = useState("");
 
   if (!isLoggedIn) {
     return (
-      <div className="min-h-screen bg-gray-50 flex items-center justify-center">
-        <Card className="max-w-md">
-          <CardHeader className="text-center">
-            <CardTitle>Access Restricted</CardTitle>
-            <CardDescription>Please log in to view your projects</CardDescription>
-          </CardHeader>
-          <CardContent className="text-center space-y-4">
-            <Link to="/login">
-              <Button>Sign In</Button>
-            </Link>
-            <Link to="/register">
-              <Button variant="outline">Create Account</Button>
-            </Link>
-          </CardContent>
-        </Card>
+      <div className="min-h-screen bg-gray-50 flex flex-col">
+        <Header />
+        
+        <div className="flex-1 flex items-center justify-center py-12">
+          <Card className="max-w-md text-center">
+            <CardHeader>
+              <Target className="h-16 w-16 text-blue-600 mx-auto mb-4" />
+              <CardTitle>Access Your Projects</CardTitle>
+              <CardDescription>
+                Sign in to view and manage your guest posting projects
+              </CardDescription>
+            </CardHeader>
+            <CardContent className="space-y-4">
+              <Link to="/login">
+                <Button className="w-full">Sign In</Button>
+              </Link>
+              <Link to="/register">
+                <Button variant="outline" className="w-full">Create Account</Button>
+              </Link>
+            </CardContent>
+          </Card>
+        </div>
+        
+        <Footer />
       </div>
     );
   }
@@ -87,26 +96,8 @@ const Projects = () => {
 
   return (
     <div className="min-h-screen bg-gray-50">
-      {/* Header */}
-      <header className="bg-white border-b">
-        <div className="container mx-auto px-4 py-4">
-          <div className="flex items-center justify-between">
-            <Link to="/" className="flex items-center space-x-2">
-              <Globe className="h-8 w-8 text-blue-600" />
-              <span className="text-2xl font-bold text-gray-900">GuestPost Pro</span>
-            </Link>
-            <div className="flex items-center space-x-4">
-              <Link to="/dashboard">
-                <Button variant="outline">Dashboard</Button>
-              </Link>
-              <Button variant="ghost" size="icon">
-                <Settings className="h-5 w-5" />
-              </Button>
-            </div>
-          </div>
-        </div>
-      </header>
-
+      <Header />
+      
       <div className="container mx-auto px-4 py-8">
         <div className="mb-8">
           <h1 className="text-3xl font-bold text-gray-900 mb-2">My Projects</h1>
@@ -283,6 +274,8 @@ const Projects = () => {
           </div>
         )}
       </div>
+      
+      <Footer />
     </div>
   );
 };

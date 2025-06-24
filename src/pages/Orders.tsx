@@ -1,34 +1,44 @@
-
 import { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Input } from "@/components/ui/input";
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { Globe, Search, Calendar, FileText, Eye, MessageCircle, Settings } from "lucide-react";
+import { ShoppingCart, Search, Calendar, Package, CheckCircle, Clock, XCircle, Filter } from "lucide-react";
 import { Link } from "react-router-dom";
+import Header from "@/components/Header";
+import Footer from "@/components/Footer";
 
 const Orders = () => {
-  const [isLoggedIn, setIsLoggedIn] = useState(true);
+  const [isLoggedIn, setIsLoggedIn] = useState(false);
   const [searchTerm, setSearchTerm] = useState("");
+  const [statusFilter, setStatusFilter] = useState("all");
 
   if (!isLoggedIn) {
     return (
-      <div className="min-h-screen bg-gray-50 flex items-center justify-center">
-        <Card className="max-w-md">
-          <CardHeader className="text-center">
-            <CardTitle>Access Restricted</CardTitle>
-            <CardDescription>Please log in to view your orders</CardDescription>
-          </CardHeader>
-          <CardContent className="text-center space-y-4">
-            <Link to="/login">
-              <Button>Sign In</Button>
-            </Link>
-            <Link to="/register">
-              <Button variant="outline">Create Account</Button>
-            </Link>
-          </CardContent>
-        </Card>
+      <div className="min-h-screen bg-gray-50 flex flex-col">
+        <Header />
+        
+        <div className="flex-1 flex items-center justify-center py-12">
+          <Card className="max-w-md text-center">
+            <CardHeader>
+              <ShoppingCart className="h-16 w-16 text-blue-600 mx-auto mb-4" />
+              <CardTitle>View Your Orders</CardTitle>
+              <CardDescription>
+                Sign in to access your order history and track purchases
+              </CardDescription>
+            </CardHeader>
+            <CardContent className="space-y-4">
+              <Link to="/login">
+                <Button className="w-full">Sign In</Button>
+              </Link>
+              <Link to="/register">
+                <Button variant="outline" className="w-full">Create Account</Button>
+              </Link>
+            </CardContent>
+          </Card>
+        </div>
+        
+        <Footer />
       </div>
     );
   }
@@ -37,99 +47,113 @@ const Orders = () => {
     {
       id: "ORD-001",
       website: "TechCrunch.com",
-      title: "AI in E-commerce: Transforming Online Shopping",
+      title: "The Future of AI in Business Operations",
       status: "Published",
-      date: "2024-01-20",
-      price: 180,
+      orderDate: "2024-01-15",
+      publishDate: "2024-01-18",
+      price: 450,
       category: "Technology",
-      publishDate: "2024-01-22"
+      linkType: "Dofollow"
     },
     {
       id: "ORD-002",
       website: "BusinessInsider.com",
-      title: "The Future of Remote Work: Trends for 2024",
+      title: "E-commerce Trends for 2024",
       status: "In Review",
-      date: "2024-01-18",
-      price: 220,
+      orderDate: "2024-01-20",
+      publishDate: null,
+      price: 325,
       category: "Business",
-      publishDate: null
+      linkType: "Dofollow"
     },
     {
       id: "ORD-003",
-      website: "HealthLine.com",
-      title: "Mental Health Benefits of Regular Exercise",
-      status: "Writing",
-      date: "2024-01-15",
-      price: 150,
+      website: "Healthline.com",
+      title: "Mental Health in the Digital Age",
+      status: "Published",
+      orderDate: "2024-01-10",
+      publishDate: "2024-01-14",
+      price: 285,
       category: "Health",
-      publishDate: null
+      linkType: "Dofollow"
     },
     {
       id: "ORD-004",
-      website: "TravelWeekly.com",
-      title: "Sustainable Tourism: A Guide for Eco-Travelers",
-      status: "Approved",
-      date: "2024-01-12",
-      price: 125,
-      category: "Travel",
-      publishDate: "2024-01-25"
+      website: "Forbes.com",
+      title: "Startup Funding Strategies",
+      status: "Pending",
+      orderDate: "2024-01-25",
+      publishDate: null,
+      price: 625,
+      category: "Business",
+      linkType: "Dofollow"
     },
     {
       id: "ORD-005",
-      website: "Forbes.com",
-      title: "Cryptocurrency Investment Strategies",
+      website: "Entrepreneur.com",
+      title: "Remote Work Best Practices",
       status: "Rejected",
-      date: "2024-01-10",
-      price: 350,
-      category: "Finance",
-      publishDate: null
+      orderDate: "2024-01-12",
+      publishDate: null,
+      price: 195,
+      category: "Business",
+      linkType: "Dofollow"
     }
   ];
 
-  const filteredOrders = orders.filter(order =>
-    order.website.toLowerCase().includes(searchTerm.toLowerCase()) ||
-    order.title.toLowerCase().includes(searchTerm.toLowerCase()) ||
-    order.category.toLowerCase().includes(searchTerm.toLowerCase())
-  );
+  const filteredOrders = orders.filter(order => {
+    const matchesSearch = order.website.toLowerCase().includes(searchTerm.toLowerCase()) ||
+                         order.title.toLowerCase().includes(searchTerm.toLowerCase()) ||
+                         order.id.toLowerCase().includes(searchTerm.toLowerCase());
+    
+    const matchesStatus = statusFilter === "all" || order.status.toLowerCase() === statusFilter.toLowerCase();
+    
+    return matchesSearch && matchesStatus;
+  });
 
-  const getStatusColor = (status: string) => {
+  const getStatusIcon = (status: string) => {
     switch (status) {
-      case "Published": return "default";
-      case "Approved": return "secondary";
-      case "In Review": return "outline";
-      case "Writing": return "outline";
-      case "Rejected": return "destructive";
-      default: return "outline";
+      case "Published":
+        return <CheckCircle className="h-4 w-4 text-green-500" />;
+      case "In Review":
+        return <Clock className="h-4 w-4 text-yellow-500" />;
+      case "Pending":
+        return <Package className="h-4 w-4 text-blue-500" />;
+      case "Rejected":
+        return <XCircle className="h-4 w-4 text-red-500" />;
+      default:
+        return <Clock className="h-4 w-4 text-gray-500" />;
     }
   };
 
+  const getStatusColor = (status: string) => {
+    switch (status) {
+      case "Published":
+        return "bg-green-100 text-green-800";
+      case "In Review":
+        return "bg-yellow-100 text-yellow-800";
+      case "Pending":
+        return "bg-blue-100 text-blue-800";
+      case "Rejected":
+        return "bg-red-100 text-red-800";
+      default:
+        return "bg-gray-100 text-gray-800";
+    }
+  };
+
+  const totalSpent = orders.reduce((sum, order) => sum + order.price, 0);
+  const publishedCount = orders.filter(order => order.status === "Published").length;
+  const pendingCount = orders.filter(order => order.status === "Pending" || order.status === "In Review").length;
+
   return (
     <div className="min-h-screen bg-gray-50">
-      {/* Header */}
-      <header className="bg-white border-b">
-        <div className="container mx-auto px-4 py-4">
-          <div className="flex items-center justify-between">
-            <Link to="/" className="flex items-center space-x-2">
-              <Globe className="h-8 w-8 text-blue-600" />
-              <span className="text-2xl font-bold text-gray-900">GuestPost Pro</span>
-            </Link>
-            <div className="flex items-center space-x-4">
-              <Link to="/dashboard">
-                <Button variant="outline">Dashboard</Button>
-              </Link>
-              <Button variant="ghost" size="icon">
-                <Settings className="h-5 w-5" />
-              </Button>
-            </div>
-          </div>
-        </div>
-      </header>
-
+      <Header />
+      
       <div className="container mx-auto px-4 py-8">
         <div className="mb-8">
           <h1 className="text-3xl font-bold text-gray-900 mb-2">Order History</h1>
           <p className="text-gray-600">
-            Track your guest post orders and their publication status
+            Track your guest posting orders and their status
           </p>
         </div>
 
@@ -138,7 +162,7 @@ const Orders = () => {
           <Card>
             <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
               <CardTitle className="text-sm font-medium">Total Orders</CardTitle>
-              <FileText className="h-4 w-4 text-muted-foreground" />
+              <ShoppingCart className="h-4 w-4 text-muted-foreground" />
             </CardHeader>
             <CardContent>
               <div className="text-2xl font-bold">{orders.length}</div>
@@ -149,44 +173,38 @@ const Orders = () => {
           <Card>
             <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
               <CardTitle className="text-sm font-medium">Published</CardTitle>
-              <Eye className="h-4 w-4 text-muted-foreground" />
+              <CheckCircle className="h-4 w-4 text-muted-foreground" />
             </CardHeader>
             <CardContent>
-              <div className="text-2xl font-bold text-green-600">
-                {orders.filter(o => o.status === "Published").length}
-              </div>
-              <p className="text-xs text-muted-foreground">Live posts</p>
+              <div className="text-2xl font-bold">{publishedCount}</div>
+              <p className="text-xs text-muted-foreground">Successfully published</p>
             </CardContent>
           </Card>
           
           <Card>
             <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-              <CardTitle className="text-sm font-medium">In Progress</CardTitle>
-              <Calendar className="h-4 w-4 text-muted-foreground" />
+              <CardTitle className="text-sm font-medium">Pending</CardTitle>
+              <Clock className="h-4 w-4 text-muted-foreground" />
             </CardHeader>
             <CardContent>
-              <div className="text-2xl font-bold text-blue-600">
-                {orders.filter(o => ["In Review", "Writing", "Approved"].includes(o.status)).length}
-              </div>
-              <p className="text-xs text-muted-foreground">Being processed</p>
+              <div className="text-2xl font-bold">{pendingCount}</div>
+              <p className="text-xs text-muted-foreground">In progress</p>
             </CardContent>
           </Card>
           
           <Card>
             <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
               <CardTitle className="text-sm font-medium">Total Spent</CardTitle>
-              <Calendar className="h-4 w-4 text-muted-foreground" />
+              <Package className="h-4 w-4 text-muted-foreground" />
             </CardHeader>
             <CardContent>
-              <div className="text-2xl font-bold">
-                ${orders.reduce((sum, order) => sum + order.price, 0)}
-              </div>
-              <p className="text-xs text-muted-foreground">Across all orders</p>
+              <div className="text-2xl font-bold">${totalSpent}</div>
+              <p className="text-xs text-muted-foreground">All orders</p>
             </CardContent>
           </Card>
         </div>
 
-        {/* Search */}
+        {/* Search and Filter */}
         <div className="flex flex-col sm:flex-row gap-4 justify-between items-center mb-6">
           <div className="relative flex-1 max-w-md">
             <Search className="absolute left-3 top-3 h-4 w-4 text-gray-400" />
@@ -197,132 +215,108 @@ const Orders = () => {
               className="pl-10"
             />
           </div>
+          <div className="flex items-center space-x-2">
+            <Filter className="h-4 w-4 text-gray-500" />
+            <select
+              value={statusFilter}
+              onChange={(e) => setStatusFilter(e.target.value)}
+              className="border border-gray-300 rounded-md px-3 py-2 text-sm"
+            >
+              <option value="all">All Status</option>
+              <option value="published">Published</option>
+              <option value="in review">In Review</option>
+              <option value="pending">Pending</option>
+              <option value="rejected">Rejected</option>
+            </select>
+          </div>
         </div>
 
         {/* Orders List */}
-        <Tabs defaultValue="all" className="space-y-4">
-          <TabsList>
-            <TabsTrigger value="all">All Orders</TabsTrigger>
-            <TabsTrigger value="published">Published</TabsTrigger>
-            <TabsTrigger value="progress">In Progress</TabsTrigger>
-            <TabsTrigger value="rejected">Rejected</TabsTrigger>
-          </TabsList>
-          
-          <TabsContent value="all" className="space-y-4">
-            <div className="space-y-4">
-              {filteredOrders.map((order) => (
-                <Card key={order.id} className="hover:shadow-md transition-shadow">
-                  <CardContent className="p-6">
-                    <div className="flex items-start justify-between">
-                      <div className="flex-1">
-                        <div className="flex items-center space-x-3 mb-2">
-                          <h3 className="text-lg font-semibold text-gray-900">
-                            {order.title}
-                          </h3>
-                          <Badge variant={getStatusColor(order.status)}>
-                            {order.status}
-                          </Badge>
-                        </div>
-                        
-                        <div className="grid grid-cols-1 md:grid-cols-3 gap-4 text-sm text-gray-600 mb-4">
-                          <div>
-                            <span className="font-medium">Website:</span> {order.website}
-                          </div>
-                          <div>
-                            <span className="font-medium">Category:</span> {order.category}
-                          </div>
-                          <div>
-                            <span className="font-medium">Order Date:</span> {order.date}
-                          </div>
-                        </div>
-
-                        {order.publishDate && (
-                          <div className="text-sm text-green-600 mb-4">
-                            <span className="font-medium">Published:</span> {order.publishDate}
-                          </div>
-                        )}
-                      </div>
-                      
-                      <div className="text-right ml-4">
-                        <div className="text-2xl font-bold text-blue-600">
-                          ${order.price}
-                        </div>
-                        <div className="text-sm text-gray-500">
-                          Order #{order.id}
-                        </div>
+        <div className="space-y-4">
+          {filteredOrders.map((order) => (
+            <Card key={order.id} className="hover:shadow-lg transition-shadow">
+              <CardContent className="p-6">
+                <div className="flex items-start justify-between">
+                  <div className="flex-1">
+                    <div className="flex items-center space-x-3 mb-2">
+                      <h3 className="text-lg font-semibold text-gray-900">
+                        {order.title}
+                      </h3>
+                      <div className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium ${getStatusColor(order.status)}`}>
+                        {getStatusIcon(order.status)}
+                        <span className="ml-1">{order.status}</span>
                       </div>
                     </div>
                     
-                    <div className="flex justify-between items-center pt-4 border-t">
-                      <div className="flex space-x-2">
-                        <Button variant="outline" size="sm">
-                          <Eye className="h-4 w-4 mr-2" />
-                          View Details
-                        </Button>
-                        {order.status === "Published" && (
-                          <Button variant="outline" size="sm">
-                            View Post
-                          </Button>
-                        )}
-                        {["In Review", "Writing"].includes(order.status) && (
-                          <Button variant="outline" size="sm">
-                            <MessageCircle className="h-4 w-4 mr-2" />
-                            Contact Publisher
-                          </Button>
-                        )}
+                    <p className="text-gray-600 mb-3">{order.website}</p>
+                    
+                    <div className="grid grid-cols-2 md:grid-cols-4 gap-4 text-sm">
+                      <div>
+                        <span className="text-gray-500">Order ID:</span>
+                        <p className="font-medium">{order.id}</p>
                       </div>
-                      
-                      {order.status === "Rejected" && (
-                        <Button size="sm">
-                          Reorder
-                        </Button>
-                      )}
+                      <div>
+                        <span className="text-gray-500">Category:</span>
+                        <p className="font-medium">{order.category}</p>
+                      </div>
+                      <div>
+                        <span className="text-gray-500">Order Date:</span>
+                        <p className="font-medium">{order.orderDate}</p>
+                      </div>
+                      <div>
+                        <span className="text-gray-500">Publish Date:</span>
+                        <p className="font-medium">{order.publishDate || "N/A"}</p>
+                      </div>
                     </div>
-                  </CardContent>
-                </Card>
-              ))}
-            </div>
-          </TabsContent>
-          
-          <TabsContent value="published">
-            <div className="space-y-4">
-              {filteredOrders.filter(o => o.status === "Published").map((order) => (
-                <Card key={order.id} className="hover:shadow-md transition-shadow">
-                  {/* Same card content structure */}
-                </Card>
-              ))}
-            </div>
-          </TabsContent>
-          
-          <TabsContent value="progress">
-            <div className="space-y-4">
-              {filteredOrders.filter(o => ["In Review", "Writing", "Approved"].includes(o.status)).map((order) => (
-                <Card key={order.id} className="hover:shadow-md transition-shadow">
-                  {/* Same card content structure */}
-                </Card>
-              ))}
-            </div>
-          </TabsContent>
-          
-          <TabsContent value="rejected">
-            <div className="space-y-4">
-              {filteredOrders.filter(o => o.status === "Rejected").map((order) => (
-                <Card key={order.id} className="hover:shadow-md transition-shadow">
-                  {/* Same card content structure */}
-                </Card>
-              ))}
-            </div>
-          </TabsContent>
-        </Tabs>
+                  </div>
+                  
+                  <div className="text-right ml-6">
+                    <div className="text-2xl font-bold text-blue-600 mb-2">
+                      ${order.price}
+                    </div>
+                    <Badge variant="outline">{order.linkType}</Badge>
+                  </div>
+                </div>
+                
+                <div className="flex justify-between items-center mt-4 pt-4 border-t">
+                  <div className="flex space-x-2">
+                    <Button variant="outline" size="sm">
+                      View Details
+                    </Button>
+                    {order.status === "Published" && (
+                      <Button variant="outline" size="sm">
+                        View Live Post
+                      </Button>
+                    )}
+                    {order.status === "Rejected" && (
+                      <Button variant="outline" size="sm">
+                        Resubmit
+                      </Button>
+                    )}
+                  </div>
+                  
+                  {order.status === "Published" && (
+                    <div className="flex items-center text-sm text-green-600">
+                      <CheckCircle className="h-4 w-4 mr-1" />
+                      Live on website
+                    </div>
+                  )}
+                </div>
+              </CardContent>
+            </Card>
+          ))}
+        </div>
 
         {filteredOrders.length === 0 && (
           <div className="text-center py-12">
-            <FileText className="h-16 w-16 text-gray-400 mx-auto mb-4" />
+            <ShoppingCart className="h-16 w-16 text-gray-400 mx-auto mb-4" />
             <h3 className="text-lg font-semibold text-gray-900 mb-2">
               No orders found
             </h3>
             <p className="text-gray-600 mb-6">
-              {searchTerm ? "Try adjusting your search terms" : "Start by browsing websites and placing your first order"}
+              {searchTerm || statusFilter !== "all" 
+                ? "Try adjusting your search terms or filters" 
+                : "You haven't placed any orders yet"}
             </p>
             <Link to="/browse">
               <Button>
@@ -332,6 +326,8 @@ const Orders = () => {
           </div>
         )}
       </div>
+      
+      <Footer />
     </div>
   );
 };
