@@ -1,6 +1,7 @@
+
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { Globe, ArrowLeft, QuestionMarkCircle } from "lucide-react";
+import { Globe, ArrowLeft, HelpCircle } from "lucide-react";
 import { Link } from "react-router-dom";
 
 const FAQ = () => {
@@ -26,7 +27,7 @@ const FAQ = () => {
 
       <div className="container mx-auto px-4 py-12 max-w-4xl">
         <div className="mb-8 text-center">
-          <QuestionMarkCircle className="h-16 w-16 text-blue-600 mx-auto mb-4" />
+          <HelpCircle className="h-16 w-16 text-blue-600 mx-auto mb-4" />
           <h1 className="text-4xl font-bold text-gray-900 mb-4">Frequently Asked Questions</h1>
           <p className="text-xl text-gray-600">
             Get answers to the most common questions about our guest posting marketplace
