@@ -17,23 +17,57 @@ const Browse = () => {
     language: "",
     minTraffic: [0],
     maxPrice: [200],
-    domainRating: [0]
+    domainRating: [0],
+    linkType: ""
   });
 
   const [searchTerm, setSearchTerm] = useState("");
+  const [isLoggedIn, setIsLoggedIn] = useState(false); // This would come from auth context
+
+  const categories = [
+    "Advertising", "Agriculture", "Animals", "Architecture", "Arts & Photo", "Automotive", 
+    "Aviation & Flight", "Banking & Financial", "Beauty & Health", "Books", "Business", 
+    "Computers", "Construction & Repair", "Cryptocurrency", "Dating", "Design", 
+    "E-commerce", "Education", "Energy", "Entertainment", "Equipment", "Events & Seminars", 
+    "Fashion", "Food & Cuisine", "Gambling", "Gaming", "General", "Home", "Industry", 
+    "Insurance", "Internet", "Jobs", "Legal", "Lifestyle", "Local News", "Machinery", 
+    "Marketing", "Media", "Medicine", "Metallurgy", "Movie", "Music", "Other", 
+    "Products", "Public Relations", "Real Estate", "Religion", "Security", "Services", "Society"
+  ];
+
+  const countries = [
+    "United States", "United Kingdom", "Canada", "Australia", "Germany", "France", "Spain", 
+    "Italy", "Netherlands", "Belgium", "Switzerland", "Austria", "Sweden", "Norway", "Denmark", 
+    "Finland", "Poland", "Czech Republic", "Hungary", "Portugal", "Greece", "Ireland", 
+    "Luxembourg", "Malta", "Cyprus", "Estonia", "Latvia", "Lithuania", "Slovenia", "Slovakia", 
+    "Croatia", "Bulgaria", "Romania", "Russia", "Ukraine", "Belarus", "Japan", "South Korea", 
+    "China", "India", "Singapore", "Malaysia", "Thailand", "Philippines", "Indonesia", 
+    "Vietnam", "Hong Kong", "Taiwan", "Brazil", "Mexico", "Argentina", "Chile", "Colombia", 
+    "Peru", "Ecuador", "Uruguay", "Paraguay", "Bolivia", "Venezuela", "South Africa", 
+    "Egypt", "Morocco", "Nigeria", "Kenya", "Ghana", "Israel", "UAE", "Saudi Arabia", 
+    "Turkey", "New Zealand"
+  ];
+
+  const languages = [
+    "English", "Spanish", "French", "German", "Italian", "Portuguese", "Russian", "Chinese", 
+    "Japanese", "Korean", "Arabic", "Hindi", "Bengali", "Urdu", "Indonesian", "Malay", 
+    "Thai", "Vietnamese", "Filipino", "Dutch", "Swedish", "Norwegian", "Danish", "Finnish", 
+    "Polish", "Czech", "Hungarian", "Romanian", "Bulgarian", "Croatian", "Serbian", 
+    "Slovenian", "Slovak", "Estonian", "Latvian", "Lithuanian", "Greek", "Turkish", 
+    "Hebrew", "Persian", "Kurdish", "Swahili", "Amharic", "Yoruba", "Igbo", "Hausa"
+  ];
 
   const websites = [
     {
       id: 1,
-      name: "TechCrunch.com",
-      description: "Leading technology news and analysis",
+      name: isLoggedIn ? "TechCrunch.com" : "Tec***.com",
+      description: "Leading technology news and analysis platform with global reach",
       category: "Technology",
       country: "United States",
       language: "English",
       traffic: "2.5M",
       domainRating: 92,
-      price: 150,
-      publisherPrice: 115,
+      price: 195, // Already marked up price
       linkType: "Dofollow",
       maxLinks: 3,
       homepageDisplay: true,
@@ -41,15 +75,14 @@ const Browse = () => {
     },
     {
       id: 2,
-      name: "BusinessInsider.com",
-      description: "Business news, analysis and insights",
+      name: isLoggedIn ? "BusinessInsider.com" : "Bus***.com",
+      description: "Business news, analysis and insights for professionals worldwide",
       category: "Business",
       country: "United States", 
       language: "English",
       traffic: "1.8M",
       domainRating: 88,
-      price: 120,
-      publisherPrice: 92,
+      price: 156, // Already marked up price
       linkType: "Dofollow",
       maxLinks: 2,
       homepageDisplay: true,
@@ -57,15 +90,14 @@ const Browse = () => {
     },
     {
       id: 3,
-      name: "HealthLine.com",
-      description: "Trusted health and wellness information",
+      name: isLoggedIn ? "HealthLine.com" : "Hea***.com",
+      description: "Trusted health and wellness information for millions of readers",
       category: "Health",
       country: "United States",
       language: "English", 
       traffic: "900k",
       domainRating: 85,
-      price: 95,
-      publisherPrice: 73,
+      price: 124, // Already marked up price
       linkType: "Any",
       maxLinks: 4,
       homepageDisplay: false,
@@ -98,11 +130,13 @@ const Browse = () => {
 
       <div className="container mx-auto px-4 py-8">
         <div className="mb-8">
-          <h1 className="text-3xl font-bold text-gray-900 mb-2">
-            Browse Websites
+          <h1 className="text-4xl font-bold text-gray-900 mb-4">
+            Browse Premium Websites for Guest Posting
           </h1>
-          <p className="text-gray-600">
-            Discover high-quality websites for your guest posting campaigns
+          <p className="text-xl text-gray-600 leading-relaxed">
+            Discover high-quality websites across all industries and niches for your guest posting campaigns. 
+            Our marketplace features thousands of verified publishers with transparent pricing, detailed metrics, 
+            and comprehensive filtering options to help you find the perfect match for your content marketing strategy.
           </p>
         </div>
 
@@ -113,17 +147,20 @@ const Browse = () => {
               <CardHeader>
                 <CardTitle className="flex items-center">
                   <Filter className="h-5 w-5 mr-2" />
-                  Filters
+                  Advanced Filters
                 </CardTitle>
+                <CardDescription>
+                  Refine your search to find the perfect websites for your guest posting needs
+                </CardDescription>
               </CardHeader>
               <CardContent className="space-y-6">
                 {/* Search */}
                 <div className="space-y-2">
-                  <Label>Search</Label>
+                  <Label>Search Websites</Label>
                   <div className="relative">
                     <Search className="absolute left-3 top-3 h-4 w-4 text-gray-400" />
                     <Input
-                      placeholder="Search websites..."
+                      placeholder="Search by domain, niche, or keyword..."
                       value={searchTerm}
                       onChange={(e) => setSearchTerm(e.target.value)}
                       className="pl-10"
@@ -138,12 +175,12 @@ const Browse = () => {
                     <SelectTrigger>
                       <SelectValue placeholder="Select category" />
                     </SelectTrigger>
-                    <SelectContent>
-                      <SelectItem value="technology">Technology</SelectItem>
-                      <SelectItem value="business">Business</SelectItem>
-                      <SelectItem value="health">Health</SelectItem>
-                      <SelectItem value="lifestyle">Lifestyle</SelectItem>
-                      <SelectItem value="finance">Finance</SelectItem>
+                    <SelectContent className="max-h-60 overflow-y-auto">
+                      {categories.map((category) => (
+                        <SelectItem key={category} value={category.toLowerCase()}>
+                          {category}
+                        </SelectItem>
+                      ))}
                     </SelectContent>
                   </Select>
                 </div>
@@ -155,12 +192,12 @@ const Browse = () => {
                     <SelectTrigger>
                       <SelectValue placeholder="Select country" />
                     </SelectTrigger>
-                    <SelectContent>
-                      <SelectItem value="us">United States</SelectItem>
-                      <SelectItem value="uk">United Kingdom</SelectItem>
-                      <SelectItem value="ca">Canada</SelectItem>
-                      <SelectItem value="au">Australia</SelectItem>
-                      <SelectItem value="de">Germany</SelectItem>
+                    <SelectContent className="max-h-60 overflow-y-auto">
+                      {countries.map((country) => (
+                        <SelectItem key={country} value={country.toLowerCase()}>
+                          {country}
+                        </SelectItem>
+                      ))}
                     </SelectContent>
                   </Select>
                 </div>
@@ -172,11 +209,27 @@ const Browse = () => {
                     <SelectTrigger>
                       <SelectValue placeholder="Select language" />
                     </SelectTrigger>
+                    <SelectContent className="max-h-60 overflow-y-auto">
+                      {languages.map((language) => (
+                        <SelectItem key={language} value={language.toLowerCase()}>
+                          {language}
+                        </SelectItem>
+                      ))}
+                    </SelectContent>
+                  </Select>
+                </div>
+
+                {/* Link Type */}
+                <div className="space-y-2">
+                  <Label>Link Type</Label>
+                  <Select value={filters.linkType} onValueChange={(value) => setFilters({...filters, linkType: value})}>
+                    <SelectTrigger>
+                      <SelectValue placeholder="Select link type" />
+                    </SelectTrigger>
                     <SelectContent>
-                      <SelectItem value="english">English</SelectItem>
-                      <SelectItem value="spanish">Spanish</SelectItem>
-                      <SelectItem value="french">French</SelectItem>
-                      <SelectItem value="german">German</SelectItem>
+                      <SelectItem value="dofollow">Dofollow Only</SelectItem>
+                      <SelectItem value="nofollow">Nofollow Only</SelectItem>
+                      <SelectItem value="any">Any Link Type</SelectItem>
                     </SelectContent>
                   </Select>
                 </div>
@@ -188,8 +241,8 @@ const Browse = () => {
                     <Slider
                       value={filters.minTraffic}
                       onValueChange={(value) => setFilters({...filters, minTraffic: value})}
-                      max={1000000}
-                      step={10000}
+                      max={5000000}
+                      step={50000}
                       className="w-full"
                     />
                   </div>
@@ -205,8 +258,8 @@ const Browse = () => {
                     <Slider
                       value={filters.maxPrice}
                       onValueChange={(value) => setFilters({...filters, maxPrice: value})}
-                      max={500}
-                      step={5}
+                      max={1000}
+                      step={10}
                       className="w-full"
                     />
                   </div>
@@ -233,6 +286,7 @@ const Browse = () => {
                 </div>
 
                 <Button className="w-full">Apply Filters</Button>
+                <Button variant="outline" className="w-full">Reset Filters</Button>
               </CardContent>
             </Card>
           </div>
@@ -241,7 +295,7 @@ const Browse = () => {
           <div className="lg:w-3/4">
             <div className="mb-6 flex items-center justify-between">
               <div className="text-sm text-gray-600">
-                Showing {websites.length} websites
+                Showing {websites.length} verified websites out of 75,000+ available
               </div>
               <Select defaultValue="price-low">
                 <SelectTrigger className="w-48">
@@ -268,7 +322,7 @@ const Browse = () => {
                             <Heart className="h-4 w-4" />
                           </Button>
                         </div>
-                        <CardDescription className="text-base">
+                        <CardDescription className="text-base mb-3">
                           {website.description}
                         </CardDescription>
                         <div className="flex flex-wrap gap-2 mt-3">
@@ -285,7 +339,7 @@ const Browse = () => {
                           ${website.price}
                         </div>
                         <div className="text-sm text-gray-500">
-                          Publisher gets ${website.publisherPrice}
+                          Final Price
                         </div>
                       </div>
                     </div>
@@ -344,6 +398,25 @@ const Browse = () => {
                 </Card>
               ))}
             </div>
+
+            {!isLoggedIn && (
+              <div className="mt-8 p-6 bg-blue-50 rounded-lg text-center">
+                <h3 className="text-lg font-semibold text-blue-900 mb-2">
+                  Unlock Full Website Details
+                </h3>
+                <p className="text-blue-700 mb-4">
+                  Register now to see complete domain names, detailed metrics, and access our full database of 75,000+ verified websites.
+                </p>
+                <div className="flex justify-center space-x-4">
+                  <Link to="/register">
+                    <Button>Create Free Account</Button>
+                  </Link>
+                  <Link to="/login">
+                    <Button variant="outline">Sign In</Button>
+                  </Link>
+                </div>
+              </div>
+            )}
           </div>
         </div>
       </div>
