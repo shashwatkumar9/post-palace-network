@@ -56,8 +56,8 @@ const Index = () => {
               </Button>
             </Link>
             <Link to="/buy-pr">
-              <Button variant="secondary" size="lg" className="text-lg px-8 py-3">
-                Buy PR
+              <Button size="lg" className="text-lg px-8 py-3 bg-green-600 hover:bg-green-700 text-white">
+                Buy PR Post
               </Button>
             </Link>
           </div>
@@ -81,22 +81,22 @@ const Index = () => {
           </div>
           <div className="grid grid-cols-1 md:grid-cols-4 gap-8 text-center">
             <div className="p-6 rounded-lg bg-blue-50">
-              <div className="text-4xl font-bold text-blue-600 mb-2">25,000+</div>
-              <div className="text-gray-600 font-medium">Active Publishers</div>
-              <div className="text-sm text-gray-500 mt-1">Verified websites</div>
+              <div className="text-4xl font-bold text-blue-600 mb-2">125,000+</div>
+              <div className="text-gray-600 font-medium">Active Websites</div>
+              <div className="text-sm text-gray-500 mt-1">Verified publishers</div>
             </div>
             <div className="p-6 rounded-lg bg-green-50">
-              <div className="text-4xl font-bold text-green-600 mb-2">75,000+</div>
+              <div className="text-4xl font-bold text-green-600 mb-2">375,000+</div>
               <div className="text-gray-600 font-medium">Websites Listed</div>
               <div className="text-sm text-gray-500 mt-1">Across all niches</div>
             </div>
             <div className="p-6 rounded-lg bg-purple-50">
-              <div className="text-4xl font-bold text-purple-600 mb-2">250,000+</div>
+              <div className="text-4xl font-bold text-purple-600 mb-2">1,250,000+</div>
               <div className="text-gray-600 font-medium">Posts Published</div>
               <div className="text-sm text-gray-500 mt-1">High-quality content</div>
             </div>
             <div className="p-6 rounded-lg bg-orange-50">
-              <div className="text-4xl font-bold text-orange-600 mb-2">99.2%</div>
+              <div className="text-4xl font-bold text-orange-600 mb-2">99.5%</div>
               <div className="text-gray-600 font-medium">Success Rate</div>
               <div className="text-sm text-gray-500 mt-1">Customer satisfaction</div>
             </div>
@@ -420,7 +420,7 @@ const Index = () => {
               </Button>
             </Link>
             <Link to="/browse">
-              <Button size="lg" variant="outline" className="text-lg px-8 py-3 text-white border-white hover:bg-white hover:text-blue-600">
+              <Button size="lg" variant="outline" className="text-lg px-8 py-3 bg-white text-blue-600 border-white hover:bg-blue-50 hover:text-blue-700">
                 Explore Websites
               </Button>
             </Link>
@@ -441,7 +441,7 @@ const Index = () => {
                 The premier marketplace for guest posting opportunities, connecting publishers and buyers worldwide.
               </p>
               <div className="flex space-x-4">
-                <Badge variant="secondary">Trusted by 25,000+ users</Badge>
+                <Badge variant="secondary">Trusted by 125,000+ users</Badge>
               </div>
             </div>
             <div>

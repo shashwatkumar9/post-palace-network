@@ -9,6 +9,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { Slider } from "@/components/ui/slider";
 import { Globe, Search, Heart, Filter, Star, TrendingUp, Users } from "lucide-react";
 import { Link } from "react-router-dom";
+import { generateDummyWebsites, categories, countries, languages, linkTypes } from "@/data/dummyWebsites";
 
 const Browse = () => {
   const [filters, setFilters] = useState({
@@ -16,7 +17,7 @@ const Browse = () => {
     country: "",
     language: "",
     minTraffic: [0],
-    maxPrice: [200],
+    maxPrice: [1000],
     domainRating: [0],
     linkType: ""
   });
@@ -24,86 +25,20 @@ const Browse = () => {
   const [searchTerm, setSearchTerm] = useState("");
   const [isLoggedIn, setIsLoggedIn] = useState(false); // This would come from auth context
 
-  const categories = [
-    "Advertising", "Agriculture", "Animals", "Architecture", "Arts & Photo", "Automotive", 
-    "Aviation & Flight", "Banking & Financial", "Beauty & Health", "Books", "Business", 
-    "Computers", "Construction & Repair", "Cryptocurrency", "Dating", "Design", 
-    "E-commerce", "Education", "Energy", "Entertainment", "Equipment", "Events & Seminars", 
-    "Fashion", "Food & Cuisine", "Gambling", "Gaming", "General", "Home", "Industry", 
-    "Insurance", "Internet", "Jobs", "Legal", "Lifestyle", "Local News", "Machinery", 
-    "Marketing", "Media", "Medicine", "Metallurgy", "Movie", "Music", "Other", 
-    "Products", "Public Relations", "Real Estate", "Religion", "Security", "Services", "Society"
-  ];
+  const websites = generateDummyWebsites(isLoggedIn);
 
-  const countries = [
-    "United States", "United Kingdom", "Canada", "Australia", "Germany", "France", "Spain", 
-    "Italy", "Netherlands", "Belgium", "Switzerland", "Austria", "Sweden", "Norway", "Denmark", 
-    "Finland", "Poland", "Czech Republic", "Hungary", "Portugal", "Greece", "Ireland", 
-    "Luxembourg", "Malta", "Cyprus", "Estonia", "Latvia", "Lithuania", "Slovenia", "Slovakia", 
-    "Croatia", "Bulgaria", "Romania", "Russia", "Ukraine", "Belarus", "Japan", "South Korea", 
-    "China", "India", "Singapore", "Malaysia", "Thailand", "Philippines", "Indonesia", 
-    "Vietnam", "Hong Kong", "Taiwan", "Brazil", "Mexico", "Argentina", "Chile", "Colombia", 
-    "Peru", "Ecuador", "Uruguay", "Paraguay", "Bolivia", "Venezuela", "South Africa", 
-    "Egypt", "Morocco", "Nigeria", "Kenya", "Ghana", "Israel", "UAE", "Saudi Arabia", 
-    "Turkey", "New Zealand"
-  ];
-
-  const languages = [
-    "English", "Spanish", "French", "German", "Italian", "Portuguese", "Russian", "Chinese", 
-    "Japanese", "Korean", "Arabic", "Hindi", "Bengali", "Urdu", "Indonesian", "Malay", 
-    "Thai", "Vietnamese", "Filipino", "Dutch", "Swedish", "Norwegian", "Danish", "Finnish", 
-    "Polish", "Czech", "Hungarian", "Romanian", "Bulgarian", "Croatian", "Serbian", 
-    "Slovenian", "Slovak", "Estonian", "Latvian", "Lithuanian", "Greek", "Turkish", 
-    "Hebrew", "Persian", "Kurdish", "Swahili", "Amharic", "Yoruba", "Igbo", "Hausa"
-  ];
-
-  const websites = [
-    {
-      id: 1,
-      name: isLoggedIn ? "TechCrunch.com" : "Tec***.com",
-      description: "Leading technology news and analysis platform with global reach",
-      category: "Technology",
-      country: "United States",
-      language: "English",
-      traffic: "2.5M",
-      domainRating: 92,
-      price: 195, // Already marked up price
-      linkType: "Dofollow",
-      maxLinks: 3,
-      homepageDisplay: true,
-      isAdvertisement: false
-    },
-    {
-      id: 2,
-      name: isLoggedIn ? "BusinessInsider.com" : "Bus***.com",
-      description: "Business news, analysis and insights for professionals worldwide",
-      category: "Business",
-      country: "United States", 
-      language: "English",
-      traffic: "1.8M",
-      domainRating: 88,
-      price: 156, // Already marked up price
-      linkType: "Dofollow",
-      maxLinks: 2,
-      homepageDisplay: true,
-      isAdvertisement: true
-    },
-    {
-      id: 3,
-      name: isLoggedIn ? "HealthLine.com" : "Hea***.com",
-      description: "Trusted health and wellness information for millions of readers",
-      category: "Health",
-      country: "United States",
-      language: "English", 
-      traffic: "900k",
-      domainRating: 85,
-      price: 124, // Already marked up price
-      linkType: "Any",
-      maxLinks: 4,
-      homepageDisplay: false,
-      isAdvertisement: true
-    }
-  ];
+  // Filter websites based on current filters
+  const filteredWebsites = websites.filter(website => {
+    if (filters.category && website.category.toLowerCase() !== filters.category) return false;
+    if (filters.country && website.country.toLowerCase() !== filters.country) return false;
+    if (filters.language && website.language.toLowerCase() !== filters.language) return false;
+    if (filters.linkType && website.linkType.toLowerCase() !== filters.linkType) return false;
+    if (website.price > filters.maxPrice[0]) return false;
+    if (website.domainRating < filters.domainRating[0]) return false;
+    if (searchTerm && !website.name.toLowerCase().includes(searchTerm.toLowerCase()) && 
+        !website.description.toLowerCase().includes(searchTerm.toLowerCase())) return false;
+    return true;
+  });
 
   return (
     <div className="min-h-screen bg-gray-50">
@@ -227,28 +162,13 @@ const Browse = () => {
                       <SelectValue placeholder="Select link type" />
                     </SelectTrigger>
                     <SelectContent>
-                      <SelectItem value="dofollow">Dofollow Only</SelectItem>
-                      <SelectItem value="nofollow">Nofollow Only</SelectItem>
-                      <SelectItem value="any">Any Link Type</SelectItem>
+                      {linkTypes.map((linkType) => (
+                        <SelectItem key={linkType} value={linkType.toLowerCase()}>
+                          {linkType}
+                        </SelectItem>
+                      ))}
                     </SelectContent>
                   </Select>
-                </div>
-
-                {/* Traffic Range */}
-                <div className="space-y-2">
-                  <Label>Minimum Monthly Traffic</Label>
-                  <div className="px-2">
-                    <Slider
-                      value={filters.minTraffic}
-                      onValueChange={(value) => setFilters({...filters, minTraffic: value})}
-                      max={5000000}
-                      step={50000}
-                      className="w-full"
-                    />
-                  </div>
-                  <div className="text-sm text-gray-600 text-center">
-                    {filters.minTraffic[0].toLocaleString()}+ visitors/month
-                  </div>
                 </div>
 
                 {/* Price Range */}
@@ -259,7 +179,7 @@ const Browse = () => {
                       value={filters.maxPrice}
                       onValueChange={(value) => setFilters({...filters, maxPrice: value})}
                       max={1000}
-                      step={10}
+                      step={25}
                       className="w-full"
                     />
                   </div>
@@ -286,7 +206,15 @@ const Browse = () => {
                 </div>
 
                 <Button className="w-full">Apply Filters</Button>
-                <Button variant="outline" className="w-full">Reset Filters</Button>
+                <Button variant="outline" className="w-full" onClick={() => setFilters({
+                  category: "",
+                  country: "",
+                  language: "",
+                  minTraffic: [0],
+                  maxPrice: [1000],
+                  domainRating: [0],
+                  linkType: ""
+                })}>Reset Filters</Button>
               </CardContent>
             </Card>
           </div>
@@ -295,7 +223,7 @@ const Browse = () => {
           <div className="lg:w-3/4">
             <div className="mb-6 flex items-center justify-between">
               <div className="text-sm text-gray-600">
-                Showing {websites.length} verified websites out of 75,000+ available
+                Showing {filteredWebsites.length} verified websites out of {websites.length} available
               </div>
               <Select defaultValue="price-low">
                 <SelectTrigger className="w-48">
@@ -311,7 +239,7 @@ const Browse = () => {
             </div>
 
             <div className="space-y-6">
-              {websites.map((website) => (
+              {filteredWebsites.slice(0, 20).map((website) => (
                 <Card key={website.id} className="hover:shadow-lg transition-shadow">
                   <CardHeader>
                     <div className="flex items-start justify-between">
@@ -405,7 +333,7 @@ const Browse = () => {
                   Unlock Full Website Details
                 </h3>
                 <p className="text-blue-700 mb-4">
-                  Register now to see complete domain names, detailed metrics, and access our full database of 75,000+ verified websites.
+                  Register now to see complete domain names, detailed metrics, and access our full database of 300+ verified websites.
                 </p>
                 <div className="flex justify-center space-x-4">
                   <Link to="/register">
