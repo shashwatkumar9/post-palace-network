@@ -9,6 +9,95 @@ export type Json =
 export type Database = {
   public: {
     Tables: {
+      admin_users: {
+        Row: {
+          admin_role: Database["public"]["Enums"]["admin_role"]
+          created_at: string | null
+          id: string
+          is_active: boolean | null
+          permissions: Json | null
+          updated_at: string | null
+          user_id: string
+        }
+        Insert: {
+          admin_role: Database["public"]["Enums"]["admin_role"]
+          created_at?: string | null
+          id?: string
+          is_active?: boolean | null
+          permissions?: Json | null
+          updated_at?: string | null
+          user_id: string
+        }
+        Update: {
+          admin_role?: Database["public"]["Enums"]["admin_role"]
+          created_at?: string | null
+          id?: string
+          is_active?: boolean | null
+          permissions?: Json | null
+          updated_at?: string | null
+          user_id?: string
+        }
+        Relationships: []
+      }
+      blog_posts: {
+        Row: {
+          author_id: string
+          content: Json
+          created_at: string | null
+          excerpt: string | null
+          featured_image: string | null
+          id: string
+          meta_description: string | null
+          meta_title: string | null
+          published_at: string | null
+          slug: string
+          status: Database["public"]["Enums"]["blog_status"] | null
+          tags: string[] | null
+          title: string
+          updated_at: string | null
+        }
+        Insert: {
+          author_id: string
+          content: Json
+          created_at?: string | null
+          excerpt?: string | null
+          featured_image?: string | null
+          id?: string
+          meta_description?: string | null
+          meta_title?: string | null
+          published_at?: string | null
+          slug: string
+          status?: Database["public"]["Enums"]["blog_status"] | null
+          tags?: string[] | null
+          title: string
+          updated_at?: string | null
+        }
+        Update: {
+          author_id?: string
+          content?: Json
+          created_at?: string | null
+          excerpt?: string | null
+          featured_image?: string | null
+          id?: string
+          meta_description?: string | null
+          meta_title?: string | null
+          published_at?: string | null
+          slug?: string
+          status?: Database["public"]["Enums"]["blog_status"] | null
+          tags?: string[] | null
+          title?: string
+          updated_at?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "blog_posts_author_id_fkey"
+            columns: ["author_id"]
+            isOneToOne: false
+            referencedRelation: "admin_users"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       guest_post_orders: {
         Row: {
           amount: number
@@ -92,6 +181,54 @@ export type Database = {
           user_id?: string
         }
         Relationships: []
+      }
+      pr_reviews: {
+        Row: {
+          created_at: string | null
+          feedback: string | null
+          id: string
+          order_id: string
+          reviewed_at: string | null
+          reviewer_id: string | null
+          status: Database["public"]["Enums"]["approval_status"] | null
+          updated_at: string | null
+        }
+        Insert: {
+          created_at?: string | null
+          feedback?: string | null
+          id?: string
+          order_id: string
+          reviewed_at?: string | null
+          reviewer_id?: string | null
+          status?: Database["public"]["Enums"]["approval_status"] | null
+          updated_at?: string | null
+        }
+        Update: {
+          created_at?: string | null
+          feedback?: string | null
+          id?: string
+          order_id?: string
+          reviewed_at?: string | null
+          reviewer_id?: string | null
+          status?: Database["public"]["Enums"]["approval_status"] | null
+          updated_at?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "pr_reviews_order_id_fkey"
+            columns: ["order_id"]
+            isOneToOne: true
+            referencedRelation: "guest_post_orders"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "pr_reviews_reviewer_id_fkey"
+            columns: ["reviewer_id"]
+            isOneToOne: false
+            referencedRelation: "admin_users"
+            referencedColumns: ["id"]
+          },
+        ]
       }
       profiles: {
         Row: {
@@ -260,14 +397,97 @@ export type Database = {
         }
         Relationships: []
       }
+      website_submissions: {
+        Row: {
+          additional_info: string | null
+          admin_notes: string | null
+          categories: string[] | null
+          contact_email: string | null
+          content_guidelines: Json | null
+          created_at: string | null
+          domain_authority: number | null
+          id: string
+          price_per_post: number
+          publisher_id: string
+          reviewed_at: string | null
+          reviewed_by: string | null
+          sample_posts: string[] | null
+          status: Database["public"]["Enums"]["approval_status"] | null
+          traffic_monthly: number | null
+          updated_at: string | null
+          website_url: string
+        }
+        Insert: {
+          additional_info?: string | null
+          admin_notes?: string | null
+          categories?: string[] | null
+          contact_email?: string | null
+          content_guidelines?: Json | null
+          created_at?: string | null
+          domain_authority?: number | null
+          id?: string
+          price_per_post: number
+          publisher_id: string
+          reviewed_at?: string | null
+          reviewed_by?: string | null
+          sample_posts?: string[] | null
+          status?: Database["public"]["Enums"]["approval_status"] | null
+          traffic_monthly?: number | null
+          updated_at?: string | null
+          website_url: string
+        }
+        Update: {
+          additional_info?: string | null
+          admin_notes?: string | null
+          categories?: string[] | null
+          contact_email?: string | null
+          content_guidelines?: Json | null
+          created_at?: string | null
+          domain_authority?: number | null
+          id?: string
+          price_per_post?: number
+          publisher_id?: string
+          reviewed_at?: string | null
+          reviewed_by?: string | null
+          sample_posts?: string[] | null
+          status?: Database["public"]["Enums"]["approval_status"] | null
+          traffic_monthly?: number | null
+          updated_at?: string | null
+          website_url?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "website_submissions_reviewed_by_fkey"
+            columns: ["reviewed_by"]
+            isOneToOne: false
+            referencedRelation: "admin_users"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
     }
     Views: {
       [_ in never]: never
     }
     Functions: {
-      [_ in never]: never
+      create_admin_user: {
+        Args: {
+          user_email: string
+          user_password: string
+          user_full_name: string
+          user_admin_role: Database["public"]["Enums"]["admin_role"]
+        }
+        Returns: string
+      }
     }
     Enums: {
+      admin_role:
+        | "super_admin"
+        | "content_moderator"
+        | "finance_admin"
+        | "support_admin"
+      approval_status: "pending" | "approved" | "rejected"
+      blog_status: "draft" | "published" | "archived"
       order_status:
         | "pending"
         | "in_progress"
@@ -398,6 +618,14 @@ export type CompositeTypes<
 export const Constants = {
   public: {
     Enums: {
+      admin_role: [
+        "super_admin",
+        "content_moderator",
+        "finance_admin",
+        "support_admin",
+      ],
+      approval_status: ["pending", "approved", "rejected"],
+      blog_status: ["draft", "published", "archived"],
       order_status: [
         "pending",
         "in_progress",
