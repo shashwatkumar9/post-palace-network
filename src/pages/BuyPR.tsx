@@ -1,7 +1,8 @@
+
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
-import { Globe, ArrowLeft, Zap, Target, BarChart3, Clock } from "lucide-react";
+import { Globe, ArrowLeft, Zap, Target, BarChart3, Clock, ShoppingCart } from "lucide-react";
 import { Link } from "react-router-dom";
 import Header from "@/components/Header";
 import Footer from "@/components/Footer";
