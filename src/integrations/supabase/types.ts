@@ -9,7 +9,257 @@ export type Json =
 export type Database = {
   public: {
     Tables: {
-      [_ in never]: never
+      guest_post_orders: {
+        Row: {
+          amount: number
+          anchor_text: string
+          buyer_id: string
+          content: Json
+          created_at: string | null
+          currency: string | null
+          deadline: string | null
+          id: string
+          notes: string | null
+          publisher_id: string | null
+          requirements: Json | null
+          status: Database["public"]["Enums"]["order_status"] | null
+          target_url: string
+          title: string
+          updated_at: string | null
+        }
+        Insert: {
+          amount: number
+          anchor_text: string
+          buyer_id: string
+          content: Json
+          created_at?: string | null
+          currency?: string | null
+          deadline?: string | null
+          id?: string
+          notes?: string | null
+          publisher_id?: string | null
+          requirements?: Json | null
+          status?: Database["public"]["Enums"]["order_status"] | null
+          target_url: string
+          title: string
+          updated_at?: string | null
+        }
+        Update: {
+          amount?: number
+          anchor_text?: string
+          buyer_id?: string
+          content?: Json
+          created_at?: string | null
+          currency?: string | null
+          deadline?: string | null
+          id?: string
+          notes?: string | null
+          publisher_id?: string | null
+          requirements?: Json | null
+          status?: Database["public"]["Enums"]["order_status"] | null
+          target_url?: string
+          title?: string
+          updated_at?: string | null
+        }
+        Relationships: []
+      }
+      payment_methods: {
+        Row: {
+          account_details: Json
+          created_at: string | null
+          id: string
+          is_active: boolean | null
+          method_type: Database["public"]["Enums"]["payment_method_type"]
+          updated_at: string | null
+          user_id: string
+        }
+        Insert: {
+          account_details: Json
+          created_at?: string | null
+          id?: string
+          is_active?: boolean | null
+          method_type: Database["public"]["Enums"]["payment_method_type"]
+          updated_at?: string | null
+          user_id: string
+        }
+        Update: {
+          account_details?: Json
+          created_at?: string | null
+          id?: string
+          is_active?: boolean | null
+          method_type?: Database["public"]["Enums"]["payment_method_type"]
+          updated_at?: string | null
+          user_id?: string
+        }
+        Relationships: []
+      }
+      profiles: {
+        Row: {
+          avatar_url: string | null
+          created_at: string | null
+          email: string
+          full_name: string | null
+          id: string
+          updated_at: string | null
+          user_role: Database["public"]["Enums"]["user_role"] | null
+        }
+        Insert: {
+          avatar_url?: string | null
+          created_at?: string | null
+          email: string
+          full_name?: string | null
+          id: string
+          updated_at?: string | null
+          user_role?: Database["public"]["Enums"]["user_role"] | null
+        }
+        Update: {
+          avatar_url?: string | null
+          created_at?: string | null
+          email?: string
+          full_name?: string | null
+          id?: string
+          updated_at?: string | null
+          user_role?: Database["public"]["Enums"]["user_role"] | null
+        }
+        Relationships: []
+      }
+      publisher_requirements: {
+        Row: {
+          categories: string[] | null
+          content_guidelines: Json | null
+          created_at: string | null
+          domain_authority: number | null
+          id: string
+          is_active: boolean | null
+          price_per_post: number
+          publisher_id: string
+          sample_posts: string[] | null
+          traffic_monthly: number | null
+          turnaround_time: number | null
+          updated_at: string | null
+          website_url: string
+        }
+        Insert: {
+          categories?: string[] | null
+          content_guidelines?: Json | null
+          created_at?: string | null
+          domain_authority?: number | null
+          id?: string
+          is_active?: boolean | null
+          price_per_post: number
+          publisher_id: string
+          sample_posts?: string[] | null
+          traffic_monthly?: number | null
+          turnaround_time?: number | null
+          updated_at?: string | null
+          website_url: string
+        }
+        Update: {
+          categories?: string[] | null
+          content_guidelines?: Json | null
+          created_at?: string | null
+          domain_authority?: number | null
+          id?: string
+          is_active?: boolean | null
+          price_per_post?: number
+          publisher_id?: string
+          sample_posts?: string[] | null
+          traffic_monthly?: number | null
+          turnaround_time?: number | null
+          updated_at?: string | null
+          website_url?: string
+        }
+        Relationships: []
+      }
+      transactions: {
+        Row: {
+          amount: number
+          created_at: string | null
+          currency: string | null
+          description: string | null
+          external_transaction_id: string | null
+          id: string
+          metadata: Json | null
+          payment_method:
+            | Database["public"]["Enums"]["payment_method_type"]
+            | null
+          status: Database["public"]["Enums"]["transaction_status"] | null
+          transaction_type: Database["public"]["Enums"]["transaction_type"]
+          updated_at: string | null
+          user_id: string
+          wallet_id: string
+        }
+        Insert: {
+          amount: number
+          created_at?: string | null
+          currency?: string | null
+          description?: string | null
+          external_transaction_id?: string | null
+          id?: string
+          metadata?: Json | null
+          payment_method?:
+            | Database["public"]["Enums"]["payment_method_type"]
+            | null
+          status?: Database["public"]["Enums"]["transaction_status"] | null
+          transaction_type: Database["public"]["Enums"]["transaction_type"]
+          updated_at?: string | null
+          user_id: string
+          wallet_id: string
+        }
+        Update: {
+          amount?: number
+          created_at?: string | null
+          currency?: string | null
+          description?: string | null
+          external_transaction_id?: string | null
+          id?: string
+          metadata?: Json | null
+          payment_method?:
+            | Database["public"]["Enums"]["payment_method_type"]
+            | null
+          status?: Database["public"]["Enums"]["transaction_status"] | null
+          transaction_type?: Database["public"]["Enums"]["transaction_type"]
+          updated_at?: string | null
+          user_id?: string
+          wallet_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "transactions_wallet_id_fkey"
+            columns: ["wallet_id"]
+            isOneToOne: false
+            referencedRelation: "wallets"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      wallets: {
+        Row: {
+          balance: number | null
+          created_at: string | null
+          currency: string | null
+          id: string
+          updated_at: string | null
+          user_id: string
+        }
+        Insert: {
+          balance?: number | null
+          created_at?: string | null
+          currency?: string | null
+          id?: string
+          updated_at?: string | null
+          user_id: string
+        }
+        Update: {
+          balance?: number | null
+          created_at?: string | null
+          currency?: string | null
+          id?: string
+          updated_at?: string | null
+          user_id?: string
+        }
+        Relationships: []
+      }
     }
     Views: {
       [_ in never]: never
@@ -18,7 +268,21 @@ export type Database = {
       [_ in never]: never
     }
     Enums: {
-      [_ in never]: never
+      order_status:
+        | "pending"
+        | "in_progress"
+        | "completed"
+        | "cancelled"
+        | "dispute"
+      payment_method_type: "stripe" | "paypal" | "payoneer"
+      transaction_status: "pending" | "completed" | "failed" | "cancelled"
+      transaction_type:
+        | "deposit"
+        | "withdrawal"
+        | "purchase"
+        | "earning"
+        | "refund"
+      user_role: "buyer" | "publisher" | "both"
     }
     CompositeTypes: {
       [_ in never]: never
@@ -133,6 +397,24 @@ export type CompositeTypes<
 
 export const Constants = {
   public: {
-    Enums: {},
+    Enums: {
+      order_status: [
+        "pending",
+        "in_progress",
+        "completed",
+        "cancelled",
+        "dispute",
+      ],
+      payment_method_type: ["stripe", "paypal", "payoneer"],
+      transaction_status: ["pending", "completed", "failed", "cancelled"],
+      transaction_type: [
+        "deposit",
+        "withdrawal",
+        "purchase",
+        "earning",
+        "refund",
+      ],
+      user_role: ["buyer", "publisher", "both"],
+    },
   },
 } as const

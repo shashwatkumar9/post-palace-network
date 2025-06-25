@@ -1,321 +1,240 @@
-import { useState } from "react";
+
+import React, { useState, useEffect } from "react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Input } from "@/components/ui/input";
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { Search, Filter, Globe, TrendingUp, Users, Star } from "lucide-react";
-import { generateDummyWebsites, categories, countries, languages, Website } from "@/data/dummyWebsites";
+import { Globe, Search, Filter, BarChart3, Clock } from "lucide-react";
 import Header from "@/components/Header";
 import Footer from "@/components/Footer";
+import { useAuth } from "@/contexts/AuthContext";
+import CreateOrderModal from "@/components/orders/CreateOrderModal";
+import { supabase } from "@/integrations/supabase/client";
 
 const Browse = () => {
+  const { user } = useAuth();
   const [searchTerm, setSearchTerm] = useState("");
   const [selectedCategory, setSelectedCategory] = useState("all");
-  const [selectedCountry, setSelectedCountry] = useState("all");
-  const [selectedLanguage, setSelectedLanguage] = useState("all");
-  const [priceRange, setPriceRange] = useState("all");
-  const [currentPage, setCurrentPage] = useState(1);
-  const itemsPerPage = 12;
+  const [selectedWebsite, setSelectedWebsite] = useState<any>(null);
+  const [createOrderOpen, setCreateOrderOpen] = useState(false);
+  const [publisherRequirements, setPublisherRequirements] = useState<any[]>([]);
+  const [loading, setLoading] = useState(true);
 
-  const isLoggedIn = false; // This will be replaced with actual auth state
-  const allWebsites = generateDummyWebsites(isLoggedIn);
+  useEffect(() => {
+    fetchPublisherRequirements();
+  }, []);
 
-  const filteredWebsites = allWebsites.filter(website => {
-    const matchesSearch = website.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
-                         website.description.toLowerCase().includes(searchTerm.toLowerCase()) ||
-                         website.category.toLowerCase().includes(searchTerm.toLowerCase());
-    
-    const matchesCategory = selectedCategory === "all" || website.category === selectedCategory;
-    const matchesCountry = selectedCountry === "all" || website.country === selectedCountry;
-    const matchesLanguage = selectedLanguage === "all" || website.language === selectedLanguage;
-    
-    let matchesPrice = true;
-    if (priceRange !== "all") {
-      const price = website.price;
-      switch (priceRange) {
-        case "0-100":
-          matchesPrice = price <= 100;
-          break;
-        case "101-300":
-          matchesPrice = price > 100 && price <= 300;
-          break;
-        case "301-500":
-          matchesPrice = price > 300 && price <= 500;
-          break;
-        case "500+":
-          matchesPrice = price > 500;
-          break;
-      }
+  const fetchPublisherRequirements = async () => {
+    try {
+      const { data, error } = await supabase
+        .from('publisher_requirements')
+        .select(`
+          *,
+          profiles:publisher_id (
+            full_name,
+            email
+          )
+        `)
+        .eq('is_active', true)
+        .order('created_at', { ascending: false });
+
+      if (error) throw error;
+      setPublisherRequirements(data || []);
+    } catch (error) {
+      console.error('Error fetching publisher requirements:', error);
+    } finally {
+      setLoading(false);
     }
+  };
+
+  const filteredWebsites = publisherRequirements.filter(req => {
+    const matchesSearch = req.website_url.toLowerCase().includes(searchTerm.toLowerCase()) ||
+                         (req.categories && req.categories.some((cat: string) => 
+                           cat.toLowerCase().includes(searchTerm.toLowerCase())));
     
-    return matchesSearch && matchesCategory && matchesCountry && matchesLanguage && matchesPrice;
+    const matchesCategory = selectedCategory === "all" || 
+                           (req.categories && req.categories.includes(selectedCategory));
+    
+    return matchesSearch && matchesCategory;
   });
 
-  const totalPages = Math.ceil(filteredWebsites.length / itemsPerPage);
-  const startIndex = (currentPage - 1) * itemsPerPage;
-  const currentWebsites = filteredWebsites.slice(startIndex, startIndex + itemsPerPage);
+  const handleOrderClick = (website: any) => {
+    if (!user) {
+      // Redirect to login or show sign up prompt
+      window.location.href = '/login';
+      return;
+    }
+    setSelectedWebsite(website);
+    setCreateOrderOpen(true);
+  };
+
+  if (loading) {
+    return (
+      <div className="min-h-screen bg-gray-50">
+        <Header />
+        <div className="container mx-auto px-4 py-8">
+          <div className="text-center">Loading websites...</div>
+        </div>
+        <Footer />
+      </div>
+    );
+  }
 
   return (
-    <div className="min-h-screen bg-gray-50 flex flex-col">
+    <div className="min-h-screen bg-gray-50">
       <Header />
       
-      <div className="flex-1">
-        {/* Hero Section */}
-        <div className="bg-gradient-to-r from-blue-600 to-purple-600 text-white py-16">
-          <div className="container mx-auto px-4 text-center">
-            <h1 className="text-4xl font-bold mb-4">Browse Premium Websites</h1>
-            <p className="text-xl mb-8">Discover high-quality guest posting opportunities across all industries</p>
-            <div className="max-w-2xl mx-auto relative">
-              <Search className="absolute left-4 top-4 h-5 w-5 text-gray-400" />
-              <Input
-                placeholder="Search websites by name, category, or description..."
-                value={searchTerm}
-                onChange={(e) => setSearchTerm(e.target.value)}
-                className="pl-12 py-3 text-lg"
-              />
-            </div>
+      <div className="container mx-auto px-4 py-8">
+        <div className="mb-8">
+          <h1 className="text-3xl font-bold text-gray-900 mb-2">Browse Websites</h1>
+          <p className="text-gray-600">
+            Find the perfect websites to publish your guest posts
+          </p>
+        </div>
+
+        {/* Search and Filter */}
+        <div className="flex flex-col sm:flex-row gap-4 justify-between items-center mb-6">
+          <div className="relative flex-1 max-w-md">
+            <Search className="absolute left-3 top-3 h-4 w-4 text-gray-400" />
+            <Input
+              placeholder="Search websites..."
+              value={searchTerm}
+              onChange={(e) => setSearchTerm(e.target.value)}
+              className="pl-10"
+            />
+          </div>
+          <div className="flex items-center space-x-2">
+            <Filter className="h-4 w-4 text-gray-500" />
+            <select
+              value={selectedCategory}
+              onChange={(e) => setSelectedCategory(e.target.value)}
+              className="border border-gray-300 rounded-md px-3 py-2 text-sm"
+            >
+              <option value="all">All Categories</option>
+              <option value="Technology">Technology</option>
+              <option value="Business">Business</option>
+              <option value="Health">Health</option>
+              <option value="Travel">Travel</option>
+              <option value="Finance">Finance</option>
+              <option value="Lifestyle">Lifestyle</option>
+            </select>
           </div>
         </div>
 
-        <div className="container mx-auto px-4 py-8">
-          {/* Filters */}
-          <div className="bg-white rounded-lg shadow-sm p-6 mb-8">
-            <div className="flex items-center gap-2 mb-4">
-              <Filter className="h-5 w-5 text-gray-500" />
-              <h2 className="text-lg font-semibold">Filters</h2>
-            </div>
-            
-            <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
-              <div>
-                <label className="block text-sm font-medium text-gray-700 mb-2">Category</label>
-                <Select value={selectedCategory} onValueChange={setSelectedCategory}>
-                  <SelectTrigger>
-                    <SelectValue placeholder="All Categories" />
-                  </SelectTrigger>
-                  <SelectContent>
-                    <SelectItem value="all">All Categories</SelectItem>
-                    {categories.map((category) => (
-                      <SelectItem key={category} value={category}>{category}</SelectItem>
-                    ))}
-                  </SelectContent>
-                </Select>
-              </div>
-
-              <div>
-                <label className="block text-sm font-medium text-gray-700 mb-2">Country</label>
-                <Select value={selectedCountry} onValueChange={setSelectedCountry}>
-                  <SelectTrigger>
-                    <SelectValue placeholder="All Countries" />
-                  </SelectTrigger>
-                  <SelectContent>
-                    <SelectItem value="all">All Countries</SelectItem>
-                    {countries.map((country) => (
-                      <SelectItem key={country} value={country}>{country}</SelectItem>
-                    ))}
-                  </SelectContent>
-                </Select>
-              </div>
-
-              <div>
-                <label className="block text-sm font-medium text-gray-700 mb-2">Language</label>
-                <Select value={selectedLanguage} onValueChange={setSelectedLanguage}>
-                  <SelectTrigger>
-                    <SelectValue placeholder="All Languages" />
-                  </SelectTrigger>
-                  <SelectContent>
-                    <SelectItem value="all">All Languages</SelectItem>
-                    {languages.map((language) => (
-                      <SelectItem key={language} value={language}>{language}</SelectItem>
-                    ))}
-                  </SelectContent>
-                </Select>
-              </div>
-
-              <div>
-                <label className="block text-sm font-medium text-gray-700 mb-2">Price Range</label>
-                <Select value={priceRange} onValueChange={setPriceRange}>
-                  <SelectTrigger>
-                    <SelectValue placeholder="All Prices" />
-                  </SelectTrigger>
-                  <SelectContent>
-                    <SelectItem value="all">All Prices</SelectItem>
-                    <SelectItem value="0-100">$0 - $100</SelectItem>
-                    <SelectItem value="101-300">$101 - $300</SelectItem>
-                    <SelectItem value="301-500">$301 - $500</SelectItem>
-                    <SelectItem value="500+">$500+</SelectItem>
-                  </SelectContent>
-                </Select>
-              </div>
-            </div>
-          </div>
-
-          {/* Results Summary */}
-          <div className="flex justify-between items-center mb-6">
-            <p className="text-gray-600">
-              Showing {currentWebsites.length} of {filteredWebsites.length} websites
-            </p>
-            <div className="text-sm text-gray-500">
-              Page {currentPage} of {totalPages}
-            </div>
-          </div>
-
-          {/* Website Grid */}
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 mb-8">
-            {currentWebsites.map((website) => (
-              <Card key={website.id} className="hover:shadow-lg transition-shadow">
-                <CardHeader>
-                  <div className="flex items-start justify-between">
-                    <div className="flex-1">
-                      <CardTitle className="flex items-center gap-2">
-                        <Globe className="h-5 w-5 text-blue-600" />
-                        {website.name}
-                      </CardTitle>
-                      <CardDescription className="mt-2">
-                        {website.description}
-                      </CardDescription>
+        {/* Websites Grid */}
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+          {filteredWebsites.map((website) => (
+            <Card key={website.id} className="hover:shadow-lg transition-shadow">
+              <CardHeader>
+                <div className="flex items-start justify-between">
+                  <div className="flex-1">
+                    <CardTitle className="flex items-center space-x-2">
+                      <Globe className="h-5 w-5 text-blue-600" />
+                      <span className="truncate">{website.website_url}</span>
+                    </CardTitle>
+                    <CardDescription className="mt-2">
+                      Published by {website.profiles?.full_name || 'Anonymous'}
+                    </CardDescription>
+                  </div>
+                  <div className="text-right">
+                    <div className="text-2xl font-bold text-green-600">
+                      ${website.price_per_post}
                     </div>
-                    {website.isAdvertisement && (
-                      <Badge variant="secondary" className="ml-2">
-                        AD
-                      </Badge>
+                    <p className="text-xs text-gray-500">per post</p>
+                  </div>
+                </div>
+              </CardHeader>
+              
+              <CardContent>
+                <div className="space-y-4">
+                  {/* Website Stats */}
+                  <div className="grid grid-cols-2 gap-4 text-sm">
+                    {website.domain_authority && (
+                      <div>
+                        <div className="flex items-center space-x-1">
+                          <BarChart3 className="h-4 w-4 text-blue-500" />
+                          <span>DA: {website.domain_authority}</span>
+                        </div>
+                      </div>
+                    )}
+                    {website.traffic_monthly && (
+                      <div>
+                        <span>Traffic: {website.traffic_monthly.toLocaleString()}/mo</span>
+                      </div>
+                    )}
+                    {website.turnaround_time && (
+                      <div className="flex items-center space-x-1">
+                        <Clock className="h-4 w-4 text-orange-500" />
+                        <span>{website.turnaround_time} days</span>
+                      </div>
                     )}
                   </div>
-                </CardHeader>
-                
-                <CardContent>
-                  <div className="space-y-3">
-                    <div className="flex justify-between text-sm">
-                      <span className="text-gray-600">Category:</span>
-                      <Badge variant="outline">{website.category}</Badge>
-                    </div>
-                    
-                    <div className="flex justify-between text-sm">
-                      <span className="text-gray-600">Traffic:</span>
-                      <div className="flex items-center gap-1">
-                        <TrendingUp className="h-4 w-4 text-green-500" />
-                        <span className="font-medium">{website.traffic}/month</span>
-                      </div>
-                    </div>
-                    
-                    <div className="flex justify-between text-sm">
-                      <span className="text-gray-600">Domain Rating:</span>
-                      <div className="flex items-center gap-1">
-                        <Star className="h-4 w-4 text-yellow-500" />
-                        <span className="font-medium">{website.domainRating}</span>
-                      </div>
-                    </div>
-                    
-                    <div className="flex justify-between text-sm">
-                      <span className="text-gray-600">Country:</span>
-                      <span className="font-medium">{website.country}</span>
-                    </div>
-                    
-                    <div className="flex justify-between text-sm">
-                      <span className="text-gray-600">Language:</span>
-                      <span className="font-medium">{website.language}</span>
-                    </div>
-                    
-                    <div className="flex justify-between text-sm">
-                      <span className="text-gray-600">Link Type:</span>
-                      <Badge variant={website.linkType === "Dofollow" ? "default" : "secondary"}>
-                        {website.linkType}
-                      </Badge>
-                    </div>
-                    
-                    <div className="border-t pt-3 mt-4">
-                      <div className="flex items-center justify-between">
-                        {isLoggedIn ? (
-                          <div className="text-2xl font-bold text-blue-600">
-                            ${website.price}
-                          </div>
-                        ) : (
-                          <div className="text-gray-400">
-                            Sign in to view pricing
-                          </div>
-                        )}
-                        
-                        {isLoggedIn ? (
-                          <Button>Order Now</Button>
-                        ) : (
-                          <Button variant="outline" asChild>
-                            <a href="/login">View Details</a>
-                          </Button>
-                        )}
-                      </div>
-                      
-                      {website.homepageDisplay && (
-                        <p className="text-xs text-green-600 mt-2">
-                          ✓ Homepage display available
-                        </p>
-                      )}
-                    </div>
-                  </div>
-                </CardContent>
-              </Card>
-            ))}
-          </div>
 
-          {/* Pagination */}
-          {totalPages > 1 && (
-            <div className="flex justify-center space-x-2">
-              <Button
-                variant="outline"
-                onClick={() => setCurrentPage(prev => Math.max(prev - 1, 1))}
-                disabled={currentPage === 1}
-              >
-                Previous
-              </Button>
-              
-              {Array.from({ length: Math.min(5, totalPages) }, (_, i) => {
-                const pageNum = currentPage <= 3 ? i + 1 : currentPage - 2 + i;
-                if (pageNum > totalPages) return null;
-                
-                return (
-                  <Button
-                    key={pageNum}
-                    variant={currentPage === pageNum ? "default" : "outline"}
-                    onClick={() => setCurrentPage(pageNum)}
+                  {/* Categories */}
+                  {website.categories && website.categories.length > 0 && (
+                    <div>
+                      <div className="flex flex-wrap gap-1">
+                        {website.categories.slice(0, 3).map((category: string) => (
+                          <Badge key={category} variant="secondary" className="text-xs">
+                            {category}
+                          </Badge>
+                        ))}
+                        {website.categories.length > 3 && (
+                          <Badge variant="outline" className="text-xs">
+                            +{website.categories.length - 3} more
+                          </Badge>
+                        )}
+                      </div>
+                    </div>
+                  )}
+
+                  {/* Content Guidelines Preview */}
+                  {website.content_guidelines && (
+                    <div className="text-xs text-gray-600 bg-gray-50 p-2 rounded">
+                      <p className="font-medium">Guidelines:</p>
+                      <p className="truncate">
+                        {typeof website.content_guidelines === 'string' 
+                          ? website.content_guidelines 
+                          : JSON.stringify(website.content_guidelines).substring(0, 100)}...
+                      </p>
+                    </div>
+                  )}
+
+                  {/* Order Button */}
+                  <Button 
+                    onClick={() => handleOrderClick(website)}
+                    className="w-full"
                   >
-                    {pageNum}
+                    {user ? `Order for $${website.price_per_post}` : 'Sign In to Order'}
                   </Button>
-                );
-              })}
-              
-              <Button
-                variant="outline"
-                onClick={() => setCurrentPage(prev => Math.min(prev + 1, totalPages))}
-                disabled={currentPage === totalPages}
-              >
-                Next
-              </Button>
-            </div>
-          )}
-
-          {filteredWebsites.length === 0 && (
-            <div className="text-center py-12">
-              <Users className="h-16 w-16 text-gray-400 mx-auto mb-4" />
-              <h3 className="text-lg font-semibold text-gray-900 mb-2">
-                No websites found
-              </h3>
-              <p className="text-gray-600 mb-6">
-                Try adjusting your search terms or filters
-              </p>
-              <Button onClick={() => {
-                setSearchTerm("");
-                setSelectedCategory("all");
-                setSelectedCountry("all");
-                setSelectedLanguage("all");
-                setPriceRange("all");
-              }}>
-                Clear All Filters
-              </Button>
-            </div>
-          )}
+                </div>
+              </CardContent>
+            </Card>
+          ))}
         </div>
+
+        {filteredWebsites.length === 0 && (
+          <div className="text-center py-12">
+            <Globe className="h-16 w-16 text-gray-400 mx-auto mb-4" />
+            <h3 className="text-lg font-semibold text-gray-900 mb-2">
+              No websites found
+            </h3>
+            <p className="text-gray-600 mb-6">
+              {searchTerm || selectedCategory !== "all" 
+                ? "Try adjusting your search terms or filters" 
+                : "No publisher requirements have been added yet"}
+            </p>
+          </div>
+        )}
       </div>
       
       <Footer />
+      
+      <CreateOrderModal 
+        open={createOrderOpen}
+        onOpenChange={setCreateOrderOpen}
+        publisherRequirement={selectedWebsite}
+      />
     </div>
   );
 };
