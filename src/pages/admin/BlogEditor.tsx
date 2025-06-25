@@ -87,12 +87,27 @@ const BlogEditor = () => {
       return;
     }
 
+    if (!adminUser?.id) {
+      toast({
+        title: 'Error',
+        description: 'Admin user not found',
+        variant: 'destructive',
+      });
+      return;
+    }
+
     setSaving(true);
     try {
       const postData = {
-        ...post,
+        title: post.title,
+        slug: post.slug,
+        excerpt: post.excerpt || null,
+        content: post.content,
         status,
-        author_id: adminUser?.id,
+        author_id: adminUser.id,
+        meta_title: post.meta_title || null,
+        meta_description: post.meta_description || null,
+        tags: post.tags || [],
         published_at: status === 'published' ? new Date().toISOString() : null,
         updated_at: new Date().toISOString(),
       };
@@ -107,7 +122,7 @@ const BlogEditor = () => {
       } else {
         const { error } = await supabase
           .from('blog_posts')
-          .insert([postData]);
+          .insert(postData);
 
         if (error) throw error;
       }
