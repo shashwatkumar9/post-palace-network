@@ -23,7 +23,9 @@ export const AdminProvider: React.FC<{ children: React.ReactNode }> = ({ childre
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
+    // Get initial session
     supabase.auth.getSession().then(({ data: { session } }) => {
+      console.log('Initial session:', session);
       setUser(session?.user ?? null);
       if (session?.user) {
         fetchAdminUser(session.user.id);
@@ -32,15 +34,17 @@ export const AdminProvider: React.FC<{ children: React.ReactNode }> = ({ childre
       }
     });
 
+    // Listen for auth changes
     const { data: { subscription } } = supabase.auth.onAuthStateChange(
       async (event, session) => {
+        console.log('Auth state changed:', event, session);
         setUser(session?.user ?? null);
         if (session?.user) {
           await fetchAdminUser(session.user.id);
         } else {
           setAdminUser(null);
+          setLoading(false);
         }
-        setLoading(false);
       }
     );
 
@@ -49,6 +53,8 @@ export const AdminProvider: React.FC<{ children: React.ReactNode }> = ({ childre
 
   const fetchAdminUser = async (userId: string) => {
     try {
+      console.log('Fetching admin user for:', userId);
+      
       const { data, error } = await supabase
         .from('admin_users')
         .select('*')
@@ -58,8 +64,12 @@ export const AdminProvider: React.FC<{ children: React.ReactNode }> = ({ childre
 
       if (error) {
         console.error('Error fetching admin user:', error);
+        if (error.code !== 'PGRST116') { // Not found error
+          console.error('Unexpected error:', error);
+        }
         setAdminUser(null);
       } else {
+        console.log('Admin user found:', data);
         setAdminUser(data);
       }
     } catch (error) {
@@ -71,11 +81,19 @@ export const AdminProvider: React.FC<{ children: React.ReactNode }> = ({ childre
   };
 
   const signIn = async (email: string, password: string) => {
-    const { error } = await supabase.auth.signInWithPassword({
+    console.log('Attempting admin sign in for:', email);
+    
+    const { data, error } = await supabase.auth.signInWithPassword({
       email,
       password,
     });
-    if (error) throw error;
+    
+    if (error) {
+      console.error('Sign in error:', error);
+      throw error;
+    }
+    
+    console.log('Sign in successful:', data);
   };
 
   const signOut = async () => {

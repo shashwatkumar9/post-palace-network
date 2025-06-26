@@ -13,12 +13,19 @@ serve(async (req) => {
   }
 
   try {
+    console.log('Creating admin user...')
+    
     const supabaseClient = createClient(
       Deno.env.get('SUPABASE_URL') ?? '',
       Deno.env.get('SUPABASE_SERVICE_ROLE_KEY') ?? ''
     )
 
     const { email, password, fullName, adminRole } = await req.json()
+    console.log('Request data:', { email, fullName, adminRole })
+
+    if (!email || !password || !fullName || !adminRole) {
+      throw new Error('Missing required fields')
+    }
 
     // Create auth user
     const { data: authData, error: authError } = await supabaseClient.auth.admin.createUser({
@@ -31,9 +38,11 @@ serve(async (req) => {
     })
 
     if (authError) {
+      console.error('Auth error:', authError)
       throw authError
     }
 
+    console.log('Auth user created:', authData.user.id)
     const userId = authData.user.id
 
     // Create profile
@@ -47,8 +56,11 @@ serve(async (req) => {
       })
 
     if (profileError) {
+      console.error('Profile error:', profileError)
       throw profileError
     }
+
+    console.log('Profile created')
 
     // Create admin user record
     const { error: adminError } = await supabaseClient
@@ -66,8 +78,11 @@ serve(async (req) => {
       })
 
     if (adminError) {
+      console.error('Admin error:', adminError)
       throw adminError
     }
+
+    console.log('Admin user record created')
 
     // Create wallet
     const { error: walletError } = await supabaseClient
@@ -79,8 +94,11 @@ serve(async (req) => {
       })
 
     if (walletError) {
+      console.error('Wallet error:', walletError)
       throw walletError
     }
+
+    console.log('Wallet created')
 
     return new Response(
       JSON.stringify({ success: true, userId }),
@@ -90,6 +108,7 @@ serve(async (req) => {
     )
 
   } catch (error) {
+    console.error('Function error:', error)
     return new Response(
       JSON.stringify({ error: error.message }),
       { 

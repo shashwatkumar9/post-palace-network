@@ -18,7 +18,7 @@ type AdminUser = Database['public']['Tables']['admin_users']['Row'];
 type Profile = Database['public']['Tables']['profiles']['Row'];
 
 interface AdminUserWithProfile extends AdminUser {
-  profiles?: Profile;
+  profiles?: Profile | null;
 }
 
 const UserManagement = () => {
@@ -27,7 +27,7 @@ const UserManagement = () => {
   const [users, setUsers] = useState<AdminUserWithProfile[]>([]);
   const [loadingUsers, setLoadingUsers] = useState(true);
   const [dialogOpen, setDialogOpen] = useState(false);
-  const [editingUser, setEditingUser] = useState<AdminUserWithProfile | null>(null);
+  const [createLoading, setCreateLoading] = useState(false);
   
   const [formData, setFormData] = useState({
     email: '',
@@ -48,11 +48,16 @@ const UserManagement = () => {
         .from('admin_users')
         .select(`
           *,
-          profiles (*)
+          profiles!inner(*)
         `)
         .order('created_at', { ascending: false });
 
-      if (error) throw error;
+      if (error) {
+        console.error('Supabase error:', error);
+        throw error;
+      }
+      
+      console.log('Fetched users:', data);
       setUsers(data || []);
     } catch (error) {
       console.error('Error fetching users:', error);
@@ -68,8 +73,11 @@ const UserManagement = () => {
 
   const handleCreateUser = async (e: React.FormEvent) => {
     e.preventDefault();
+    setCreateLoading(true);
     
     try {
+      console.log('Creating admin user with:', formData);
+      
       const { data, error } = await supabase.functions.invoke('create-admin-user', {
         body: {
           email: formData.email,
@@ -79,7 +87,12 @@ const UserManagement = () => {
         },
       });
 
-      if (error) throw error;
+      if (error) {
+        console.error('Edge function error:', error);
+        throw error;
+      }
+
+      console.log('Admin user created successfully:', data);
 
       toast({
         title: 'Success',
@@ -101,6 +114,8 @@ const UserManagement = () => {
         description: error.message || 'Failed to create user',
         variant: 'destructive',
       });
+    } finally {
+      setCreateLoading(false);
     }
   };
 
@@ -108,7 +123,16 @@ const UserManagement = () => {
     try {
       const { error } = await supabase
         .from('admin_users')
-        .update({ admin_role: newRole, updated_at: new Date().toISOString() })
+        .update({ 
+          admin_role: newRole, 
+          updated_at: new Date().toISOString(),
+          permissions: {
+            manage_users: newRole === 'super_admin',
+            manage_content: ['super_admin', 'content_moderator'].includes(newRole),
+            manage_finances: ['super_admin', 'finance_admin'].includes(newRole),
+            manage_settings: newRole === 'super_admin'
+          }
+        })
         .eq('id', userId);
 
       if (error) throw error;
@@ -264,10 +288,13 @@ const UserManagement = () => {
                     type="button" 
                     variant="outline" 
                     onClick={() => setDialogOpen(false)}
+                    disabled={createLoading}
                   >
                     Cancel
                   </Button>
-                  <Button type="submit">Create User</Button>
+                  <Button type="submit" disabled={createLoading}>
+                    {createLoading ? 'Creating...' : 'Create User'}
+                  </Button>
                 </div>
               </form>
             </DialogContent>
