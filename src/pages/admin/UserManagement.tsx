@@ -1,4 +1,3 @@
-
 import React, { useState, useEffect } from 'react';
 import { useAdmin } from '@/contexts/AdminContext';
 import { Navigate } from 'react-router-dom';
@@ -44,7 +43,10 @@ const UserManagement = () => {
 
   const fetchUsers = async () => {
     try {
-      // First get admin users
+      setLoadingUsers(true);
+      console.log('Fetching admin users...');
+      
+      // First get admin users only
       const { data: adminUsers, error: adminError } = await supabase
         .from('admin_users')
         .select('*')
@@ -55,26 +57,41 @@ const UserManagement = () => {
         throw adminError;
       }
 
-      if (!adminUsers) {
+      if (!adminUsers || adminUsers.length === 0) {
+        console.log('No admin users found');
         setUsers([]);
         return;
       }
 
+      console.log('Found admin users:', adminUsers.length);
+
       // Then get profiles for each admin user
-      const usersWithProfiles = await Promise.all(
-        adminUsers.map(async (adminUser) => {
-          const { data: profile } = await supabase
+      const usersWithProfiles: AdminUserWithProfile[] = [];
+      
+      for (const adminUser of adminUsers) {
+        try {
+          const { data: profile, error: profileError } = await supabase
             .from('profiles')
             .select('*')
             .eq('id', adminUser.user_id)
-            .single();
+            .maybeSingle();
 
-          return {
+          if (profileError) {
+            console.error(`Profile error for user ${adminUser.user_id}:`, profileError);
+          }
+
+          usersWithProfiles.push({
             ...adminUser,
             profile: profile || null
-          };
-        })
-      );
+          });
+        } catch (profileError) {
+          console.error(`Error fetching profile for user ${adminUser.user_id}:`, profileError);
+          usersWithProfiles.push({
+            ...adminUser,
+            profile: null
+          });
+        }
+      }
 
       console.log('Fetched users with profiles:', usersWithProfiles);
       setUsers(usersWithProfiles);
@@ -85,6 +102,7 @@ const UserManagement = () => {
         description: 'Failed to fetch users',
         variant: 'destructive',
       });
+      setUsers([]);
     } finally {
       setLoadingUsers(false);
     }
