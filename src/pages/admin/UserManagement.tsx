@@ -18,7 +18,7 @@ type AdminUser = Database['public']['Tables']['admin_users']['Row'];
 type Profile = Database['public']['Tables']['profiles']['Row'];
 
 interface AdminUserWithProfile extends AdminUser {
-  profiles?: Profile | null;
+  profile?: Profile | null;
 }
 
 const UserManagement = () => {
@@ -44,21 +44,40 @@ const UserManagement = () => {
 
   const fetchUsers = async () => {
     try {
-      const { data, error } = await supabase
+      // First get admin users
+      const { data: adminUsers, error: adminError } = await supabase
         .from('admin_users')
-        .select(`
-          *,
-          profiles!inner(*)
-        `)
+        .select('*')
         .order('created_at', { ascending: false });
 
-      if (error) {
-        console.error('Supabase error:', error);
-        throw error;
+      if (adminError) {
+        console.error('Admin users error:', adminError);
+        throw adminError;
       }
-      
-      console.log('Fetched users:', data);
-      setUsers(data || []);
+
+      if (!adminUsers) {
+        setUsers([]);
+        return;
+      }
+
+      // Then get profiles for each admin user
+      const usersWithProfiles = await Promise.all(
+        adminUsers.map(async (adminUser) => {
+          const { data: profile } = await supabase
+            .from('profiles')
+            .select('*')
+            .eq('id', adminUser.user_id)
+            .single();
+
+          return {
+            ...adminUser,
+            profile: profile || null
+          };
+        })
+      );
+
+      console.log('Fetched users with profiles:', usersWithProfiles);
+      setUsers(usersWithProfiles);
     } catch (error) {
       console.error('Error fetching users:', error);
       toast({
@@ -313,9 +332,9 @@ const UserManagement = () => {
                     
                     <div>
                       <h3 className="font-medium text-lg">
-                        {user.profiles?.full_name || 'Unknown User'}
+                        {user.profile?.full_name || 'Unknown User'}
                       </h3>
-                      <p className="text-gray-600">{user.profiles?.email}</p>
+                      <p className="text-gray-600">{user.profile?.email}</p>
                       <div className="flex items-center space-x-2 mt-1">
                         <span className={`px-2 py-1 rounded-full text-xs font-medium ${getRoleBadgeColor(user.admin_role)}`}>
                           {user.admin_role.replace('_', ' ').toUpperCase()}
