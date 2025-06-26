@@ -10,7 +10,8 @@ import {
   MessageSquare, 
   LogOut, 
   Settings,
-  Users
+  Users,
+  Shield
 } from 'lucide-react';
 import Footer from '@/components/Footer';
 
@@ -35,14 +36,38 @@ const AdminLayout: React.FC<AdminLayoutProps> = ({ children }) => {
     await signOut();
   };
 
+  const getRoleColor = (role: string) => {
+    switch (role) {
+      case 'super_admin':
+        return 'text-red-600';
+      case 'content_moderator':
+        return 'text-blue-600';
+      case 'finance_admin':
+        return 'text-green-600';
+      case 'support_admin':
+        return 'text-yellow-600';
+      default:
+        return 'text-gray-600';
+    }
+  };
+
   return (
     <div className="min-h-screen bg-gray-50 flex flex-col">
       <div className="flex flex-1">
         {/* Sidebar */}
-        <div className="w-64 bg-white shadow-sm">
-          <div className="p-6">
-            <h2 className="text-xl font-bold text-gray-900">Admin Panel</h2>
-            <p className="text-sm text-gray-600">{adminUser?.admin_role}</p>
+        <div className="w-64 bg-white shadow-sm border-r">
+          <div className="p-6 border-b">
+            <div className="flex items-center space-x-3">
+              <div className="h-10 w-10 bg-blue-100 rounded-full flex items-center justify-center">
+                <Shield className="h-6 w-6 text-blue-600" />
+              </div>
+              <div>
+                <h2 className="text-xl font-bold text-gray-900">Admin Panel</h2>
+                <p className={`text-sm font-medium ${getRoleColor(adminUser?.admin_role || '')}`}>
+                  {adminUser?.admin_role?.replace('_', ' ').toUpperCase()}
+                </p>
+              </div>
+            </div>
           </div>
           
           <nav className="mt-6">
@@ -54,10 +79,10 @@ const AdminLayout: React.FC<AdminLayoutProps> = ({ children }) => {
                 <Link
                   key={item.name}
                   to={item.href}
-                  className={`flex items-center px-6 py-3 text-sm font-medium ${
+                  className={`flex items-center px-6 py-3 text-sm font-medium transition-colors ${
                     isActive
                       ? 'bg-blue-50 text-blue-700 border-r-2 border-blue-700'
-                      : 'text-gray-700 hover:bg-gray-50'
+                      : 'text-gray-700 hover:bg-gray-50 hover:text-gray-900'
                   }`}
                 >
                   <Icon className="mr-3 h-5 w-5" />
@@ -71,7 +96,7 @@ const AdminLayout: React.FC<AdminLayoutProps> = ({ children }) => {
             <Button
               onClick={handleSignOut}
               variant="outline"
-              className="w-full justify-start"
+              className="w-full justify-start hover:bg-red-50 hover:text-red-600 hover:border-red-200"
             >
               <LogOut className="mr-3 h-5 w-5" />
               Sign Out

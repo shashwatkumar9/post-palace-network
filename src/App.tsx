@@ -37,6 +37,7 @@ import WebsiteApprovals from "./pages/admin/WebsiteApprovals";
 import PRReviews from "./pages/admin/PRReviews";
 import BlogManagement from "./pages/admin/BlogManagement";
 import BlogEditor from "./pages/admin/BlogEditor";
+import UserManagement from "./pages/admin/UserManagement";
 
 const queryClient = new QueryClient();
 
@@ -82,6 +83,7 @@ const App = () => (
               <Route path="/admin/blog" element={<BlogManagement />} />
               <Route path="/admin/blog/new" element={<BlogEditor />} />
               <Route path="/admin/blog/edit/:postId" element={<BlogEditor />} />
+              <Route path="/admin/users" element={<UserManagement />} />
               
               <Route path="*" element={<NotFound />} />
             </Routes>
