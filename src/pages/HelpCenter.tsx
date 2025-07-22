@@ -15,7 +15,7 @@ const HelpCenter = () => {
           <div className="flex items-center justify-between">
             <Link to="/" className="flex items-center space-x-2">
               <Globe className="h-8 w-8 text-blue-600" />
-              <span className="text-2xl font-bold text-gray-900">GuestPost Pro</span>
+              <span className="text-2xl font-bold text-gray-900">WholePR</span>
             </Link>
             <Link to="/">
               <Button variant="outline" className="flex items-center">
@@ -31,7 +31,7 @@ const HelpCenter = () => {
         <div className="text-center mb-12">
           <h1 className="text-5xl font-bold text-gray-900 mb-6">Help Center</h1>
           <p className="text-xl text-gray-600 max-w-3xl mx-auto mb-8">
-            Find answers, get support, and learn how to make the most of GuestPost Pro. 
+            Find answers, get support, and learn how to make the most of WholePR. 
             Our comprehensive help center provides everything you need to succeed with guest posting.
           </p>
           

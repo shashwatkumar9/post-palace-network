@@ -13,7 +13,7 @@ const FAQ = () => {
           <div className="flex items-center justify-between">
             <Link to="/" className="flex items-center space-x-2">
               <Globe className="h-8 w-8 text-blue-600" />
-              <span className="text-2xl font-bold text-gray-900">GuestPost Pro</span>
+              <span className="text-2xl font-bold text-gray-900">WholePR</span>
             </Link>
             <Link to="/">
               <Button variant="outline" className="flex items-center">
@@ -110,7 +110,7 @@ const FAQ = () => {
 
           <Card>
             <CardHeader>
-              <CardTitle className="text-left">What types of websites are listed on GuestPost Pro?</CardTitle>
+              <CardTitle className="text-left">What types of websites are listed on WholePR?</CardTitle>
             </CardHeader>
             <CardContent>
               <p className="text-gray-600">
@@ -135,7 +135,7 @@ const FAQ = () => {
 
           <Card>
             <CardHeader>
-              <CardTitle className="text-left">Is GuestPost Pro safe and secure?</CardTitle>
+              <CardTitle className="text-left">Is WholePR safe and secure?</CardTitle>
             </CardHeader>
             <CardContent>
               <p className="text-gray-600">

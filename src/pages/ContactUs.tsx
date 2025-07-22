@@ -17,7 +17,7 @@ const ContactUs = () => {
           <div className="flex items-center justify-between">
             <Link to="/" className="flex items-center space-x-2">
               <Globe className="h-8 w-8 text-blue-600" />
-              <span className="text-2xl font-bold text-gray-900">GuestPost Pro</span>
+              <span className="text-2xl font-bold text-gray-900">WholePR</span>
             </Link>
             <Link to="/">
               <Button variant="outline" className="flex items-center">
@@ -33,7 +33,7 @@ const ContactUs = () => {
         <div className="text-center mb-12">
           <h1 className="text-5xl font-bold text-gray-900 mb-6">Contact Us</h1>
           <p className="text-xl text-gray-600 max-w-3xl mx-auto">
-            Have questions, need support, or want to learn more about GuestPost Pro? 
+            Have questions, need support, or want to learn more about WholePR? 
             Our team is here to help you succeed with your guest posting campaigns.
           </p>
         </div>
@@ -56,7 +56,7 @@ const ContactUs = () => {
                   <Mail className="h-5 w-5 text-blue-600 mt-1" />
                   <div>
                     <h3 className="font-semibold text-gray-900">Email Support</h3>
-                    <p className="text-gray-600">support@guestpostpro.com</p>
+                    <p className="text-gray-600">support@wholepr.com</p>
                     <p className="text-sm text-gray-500">Response within 2 hours</p>
                   </div>
                 </div>
