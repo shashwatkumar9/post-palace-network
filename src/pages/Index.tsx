@@ -13,7 +13,7 @@ const Index = () => {
         <div className="container mx-auto px-4 py-4 flex items-center justify-between">
           <div className="flex items-center space-x-2">
             <Globe className="h-8 w-8 text-blue-600" />
-            <span className="text-2xl font-bold text-gray-900">GuestPost Pro</span>
+            <span className="text-2xl font-bold text-gray-900">WholePR</span>
           </div>
           <nav className="hidden md:flex items-center space-x-6">
             <Link to="/publishers" className="text-gray-600 hover:text-blue-600 transition-colors">For Publishers</Link>
@@ -62,7 +62,7 @@ const Index = () => {
             </Link>
           </div>
           <div className="text-sm text-gray-500">
-            Join 25,000+ publishers and buyers who trust GuestPost Pro
+            Join 25,000+ publishers and buyers who trust WholePR
           </div>
         </div>
       </section>
@@ -109,7 +109,7 @@ const Index = () => {
         <div className="container mx-auto">
           <div className="text-center mb-16">
             <h2 className="text-4xl font-bold text-gray-900 mb-4">
-              Why Choose GuestPost Pro?
+              Why Choose WholePR?
             </h2>
             <p className="text-xl text-gray-600 max-w-3xl mx-auto">
               Everything you need to succeed in guest posting, whether you're buying or selling. 
@@ -231,7 +231,7 @@ const Index = () => {
         <div className="container mx-auto px-4">
           <div className="text-center mb-16">
             <h2 className="text-4xl font-bold text-gray-900 mb-4">
-              How GuestPost Pro Works
+              How WholePR Works
             </h2>
             <p className="text-xl text-gray-600 max-w-2xl mx-auto">
               Our streamlined process makes guest posting simple and effective for both publishers and buyers
@@ -408,7 +408,7 @@ const Index = () => {
             Ready to Start Your Guest Posting Journey?
           </h2>
           <p className="text-xl mb-8 opacity-90 max-w-3xl mx-auto">
-            Join thousands of publishers and buyers who trust GuestPost Pro for their content marketing needs. 
+            Join thousands of publishers and buyers who trust WholePR for their content marketing needs. 
             Whether you're looking to monetize your website traffic or build high-quality backlinks for SEO, 
             our platform provides everything you need to succeed in the competitive world of digital marketing.
           </p>
@@ -435,7 +435,7 @@ const Index = () => {
             <div>
               <div className="flex items-center space-x-2 mb-6">
                 <Globe className="h-6 w-6" />
-                <span className="text-xl font-bold">GuestPost Pro</span>
+                <span className="text-xl font-bold">WholePR</span>
               </div>
               <p className="text-gray-400 mb-4">
                 The premier marketplace for guest posting opportunities, connecting publishers and buyers worldwide.
@@ -475,7 +475,7 @@ const Index = () => {
           <div className="border-t border-gray-800 mt-12 pt-8">
             <div className="flex flex-col md:flex-row justify-between items-center">
               <p className="text-gray-400 mb-4 md:mb-0">
-                &copy; 2024 GuestPost Pro. All rights reserved.
+                &copy; 2024 WholePR. All rights reserved.
               </p>
               <div className="flex space-x-6 text-gray-400">
                 <Link to="/privacy" className="hover:text-white transition-colors">Privacy Policy</Link>

@@ -13,7 +13,7 @@ const Affiliate = () => {
         <div className="container mx-auto px-4 py-4 flex items-center justify-between">
           <Link to="/" className="flex items-center space-x-2">
             <Globe className="h-8 w-8 text-blue-600" />
-            <span className="text-2xl font-bold text-gray-900">GuestPost Pro</span>
+            <span className="text-2xl font-bold text-gray-900">WholePR</span>
           </Link>
           <nav className="hidden md:flex items-center space-x-6">
             <Link to="/publishers" className="text-gray-600 hover:text-blue-600 transition-colors">For Publishers</Link>
@@ -268,7 +268,7 @@ const Affiliate = () => {
               <div className="flex items-start space-x-6">
                 <div className="bg-blue-100 text-blue-600 rounded-full w-12 h-12 flex items-center justify-center font-bold text-lg">2</div>
                 <div className="flex-1">
-                  <h3 className="text-xl font-semibold text-gray-900 mb-2">Promote GuestPost Pro</h3>
+                  <h3 className="text-xl font-semibold text-gray-900 mb-2">Promote WholePR</h3>
                   <p className="text-gray-600 mb-4">
                     Share your affiliate link through your website, blog, social media, email list, or direct outreach. 
                     Target SEO professionals, content marketers, and business owners who need link building services.
@@ -328,7 +328,7 @@ const Affiliate = () => {
               Marketing Resources & Support
             </h2>
             <p className="text-xl text-gray-600 max-w-2xl mx-auto">
-              Everything you need to promote GuestPost Pro effectively
+              Everything you need to promote WholePR effectively
             </p>
           </div>
 

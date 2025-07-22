@@ -10,7 +10,7 @@ const Footer = () => {
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
           {/* Company Info */}
           <div>
-            <h3 className="text-lg font-semibold mb-4 text-white">PR Platform</h3>
+            <h3 className="text-lg font-semibold mb-4 text-white">WholePR</h3>
             <p className="text-gray-300 mb-4 leading-relaxed">
               The leading marketplace for guest posting and PR opportunities. 
               Connect publishers and content creators worldwide.
@@ -141,10 +141,10 @@ const Footer = () => {
               <div className="flex items-center">
                 <Mail className="h-4 w-4 mr-3 text-gray-400 flex-shrink-0" />
                 <a 
-                  href="mailto:support@prplatform.com" 
+                  href="mailto:support@wholepr.com" 
                   className="text-gray-300 hover:text-white transition-colors text-sm"
                 >
-                  support@prplatform.com
+                  support@wholepr.com
                 </a>
               </div>
               <div className="flex items-center">
@@ -167,7 +167,7 @@ const Footer = () => {
         <div className="border-t border-gray-800 mt-12 pt-8">
           <div className="flex flex-col md:flex-row justify-between items-center">
             <p className="text-gray-400 text-sm mb-4 md:mb-0">
-              © 2024 PR Platform. All rights reserved.
+              © 2024 WholePR. All rights reserved.
             </p>
             <div className="flex flex-wrap justify-center md:justify-end space-x-6">
               <Link 
